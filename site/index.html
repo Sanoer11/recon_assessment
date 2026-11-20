@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>October 2026 Reconciliation</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --panel: #ffffff;
+    --border: #e3e6eb;
+    --text: #1a1d23;
+    --muted: #6b7280;
+    --accent: #2f6fed;
+    --good: #1f9254;
+    --bad: #d1483c;
+    --warn: #b7791f;
+    --info-bg: #eef2ff;
+    --shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14161a;
+      --panel: #1d2025;
+      --border: #2d3138;
+      --text: #e7e9ec;
+      --muted: #9aa1ad;
+      --accent: #6d9bff;
+      --good: #3ecf8e;
+      --bad: #ff6b5e;
+      --warn: #e3b341;
+      --info-bg: #202436;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14161a; --panel: #1d2025; --border: #2d3138; --text: #e7e9ec; --muted: #9aa1ad;
+    --accent: #6d9bff; --good: #3ecf8e; --bad: #ff6b5e; --warn: #e3b341; --info-bg: #202436;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.3);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 14px; line-height: 1.5;
+  }
+  header {
+    padding: 20px 20px 4px; max-width: 1180px; margin: 0 auto;
+  }
+  header h1 { font-size: 20px; margin: 0 0 2px; font-weight: 650; }
+  header p { margin: 0; color: var(--muted); font-size: 13px; }
+  main { max-width: 1180px; margin: 0 auto; padding: 16px 20px 60px; }
+  section { margin-bottom: 28px; }
+  h2 { font-size: 15px; font-weight: 650; margin: 0 0 12px; }
+  .panel {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px; box-shadow: var(--shadow);
+  }
+  .kpi-row {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  }
+  .kpi {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; box-shadow: var(--shadow);
+  }
+  .kpi .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+  .kpi .value { font-size: 22px; font-weight: 650; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .kpi .value.good { color: var(--good); }
+  .kpi .value.bad { color: var(--bad); }
+  .stage-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .stage { background: var(--info-bg); border-radius: 10px; padding: 12px; text-align: center; }
+  .stage .n { font-size: 24px; font-weight: 700; }
+  .stage .label { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  canvas { max-width: 100%; }
+  .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; align-items: center; }
+  select, input[type="search"] {
+    background: var(--panel); color: var(--text); border: 1px solid var(--border);
+    border-radius: 8px; padding: 7px 10px; font-size: 13px;
+  }
+  input[type="search"] { flex: 1; min-width: 160px; }
+  a.download {
+    margin-left: auto; color: var(--accent); text-decoration: none; font-weight: 600;
+    font-size: 13px; white-space: nowrap;
+  }
+  a.download:hover { text-decoration: underline; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: .03em; position: sticky; top: 0; background: var(--panel); }
+  tbody tr:hover { background: var(--info-bg); }
+  .table-wrap { overflow-x: auto; max-height: 520px; overflow-y: auto; border-radius: 8px; border: 1px solid var(--border); }
+  .pill {
+    display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px;
+    font-weight: 600; white-space: nowrap;
+  }
+  .pill.severity-high { background: #fde2e1; color: #9c2b24; }
+  .pill.severity-medium { background: #fdf1d6; color: #8a5b10; }
+  .pill.severity-low { background: #e4f3ea; color: #176b40; }
+  .pill.severity-info { background: #e7ecfa; color: #30499c; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .pill.severity-high { background: #4a2420; color: #ff9d92; }
+    :root:not([data-theme="light"]) .pill.severity-medium { background: #463b1d; color: #f0c766; }
+    :root:not([data-theme="light"]) .pill.severity-low { background: #1c3b2b; color: #67dba0; }
+    :root:not([data-theme="light"]) .pill.severity-info { background: #212a49; color: #9db1f2; }
+  }
+  :root[data-theme="dark"] .pill.severity-high { background: #4a2420; color: #ff9d92; }
+  :root[data-theme="dark"] .pill.severity-medium { background: #463b1d; color: #f0c766; }
+  :root[data-theme="dark"] .pill.severity-low { background: #1c3b2b; color: #67dba0; }
+  :root[data-theme="dark"] .pill.severity-info { background: #212a49; color: #9db1f2; }
+  .mono { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+  .assumptions li { margin-bottom: 8px; color: var(--text); }
+  .assumptions { margin: 0; padding-left: 20px; }
+  .empty-state { color: var(--muted); text-align: center; padding: 24px; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; padding: 20px; }
+  @media (max-width: 760px) {
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .stage-row { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>October 2026 Reconciliation</h1>
+  <p id="subheading">Loading report&hellip;</p>
+</header>
+<main id="app" style="display:none">
+
+  <section class="kpi-row" id="kpiRow"></section>
+
+  <section class="panel">
+    <h2>Matching-stage stats</h2>
+    <div class="stage-row" id="stageRow"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Variance bridge (October bank settlements &minus; ledger expected net)</h2>
+    <canvas id="bridgeChart" height="110"></canvas>
+  </section>
+
+  <section class="panel">
+    <h2>Exceptions</h2>
+    <div class="controls">
+      <select id="bucketFilter"></select>
+      <input type="search" id="search" placeholder="Search id, txn, owner, explanation&hellip;">
+      <a class="download" href="exceptions.csv" download>Download exceptions.csv &darr;</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Bucket</th><th>Id</th><th>Ledger amt</th><th>Bank amt</th><th>Diff</th>
+            <th>Owner</th><th>Severity</th><th>Explanation</th><th>Suggested entry</th>
+          </tr>
+        </thead>
+        <tbody id="excBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Assumptions</h2>
+    <ul class="assumptions" id="assumptionsList"></ul>
+  </section>
+
+</main>
+<footer>Generated by reconcile.py from ledger.csv and bank_statement.csv only &mdash; never from ground truth.</footer>
+
+<script>
+const fmt = new Intl.NumberFormat('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+function money(s) {
+  const n = parseFloat(s);
+  const sign = n < 0 ? '−' : '';
+  return sign + '₹' + fmt.format(Math.abs(n));
+}
+
+function cssVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+fetch('report.json').then(r => {
+  if (!r.ok) throw new Error('report.json not found (' + r.status + ')');
+  return r.json();
+}).then(render).catch(err => {
+  document.getElementById('subheading').textContent = 'Failed to load report.json: ' + err.message;
+});
+
+function render(report) {
+  document.getElementById('subheading').textContent =
+    `Period end ${report.meta.period_end} · ${report.meta.ledger_rows} ledger rows · ${report.meta.bank_rows} bank rows · ${report.exceptions.length} exceptions`;
+  document.getElementById('app').style.display = 'block';
+
+  renderKpis(report);
+  renderStageStats(report);
+  renderBridge(report);
+  renderExceptions(report);
+  renderAssumptions(report);
+}
+
+function renderKpis(report) {
+  const residual = parseFloat(report.bridge.RESIDUAL);
+  const cards = [
+    { label: 'Ledger total (expected net)', value: money(report.totals.ledger_total) },
+    { label: 'Bank total (Oct settlements)', value: money(report.totals.bank_total) },
+    { label: 'Variance', value: money(report.totals.variance), cls: parseFloat(report.totals.variance) === 0 ? 'good' : '' },
+    { label: 'Bridge residual', value: money(report.bridge.RESIDUAL), cls: residual === 0 ? 'good' : 'bad' },
+  ];
+  document.getElementById('kpiRow').innerHTML = cards.map(c => `
+    <div class="kpi">
+      <div class="label">${c.label}</div>
+      <div class="value mono ${c.cls || ''}">${c.value}</div>
+    </div>`).join('');
+}
+
+function renderStageStats(report) {
+  const s = report.stage_counts;
+  const labels = {
+    S1: 'S1 &middot; reference &rarr; txn', S2: 'S2 &middot; reference &rarr; batch', S3: 'S3 &middot; fallback (low confidence)',
+  };
+  document.getElementById('stageRow').innerHTML = Object.entries(s).map(([k, v]) => `
+    <div class="stage">
+      <div class="n mono">${v}</div>
+      <div class="label">${labels[k] || k}</div>
+    </div>`).join('');
+}
+
+function renderBridge(report) {
+  const bridge = report.bridge;
+  const order = Object.keys(bridge).filter(k => k !== 'RESIDUAL' && k !== 'matched');
+  order.sort();
+  const steps = [...order, 'RESIDUAL'];
+
+  const ledgerTotal = parseFloat(report.totals.ledger_total);
+  const bankTotal = parseFloat(report.totals.bank_total);
+
+  const labels = ['Ledger total', ...steps, 'Bank total'];
+  const data = [];
+  const colors = [];
+  const values = [];
+  const good = cssVar('--good') || '#1f9254';
+  const bad = cssVar('--bad') || '#d1483c';
+  const accent = cssVar('--accent') || '#2f6fed';
+
+  data.push([0, ledgerTotal]);
+  colors.push(accent);
+  values.push(ledgerTotal);
+  let cum = ledgerTotal;
+  for (const step of steps) {
+    const v = parseFloat(bridge[step]);
+    const start = cum;
+    cum += v;
+    data.push([Math.min(start, cum), Math.max(start, cum)]);
+    colors.push(v === 0 ? '#9aa1ad' : (v > 0 ? good : bad));
+    values.push(v);
+  }
+  data.push([0, bankTotal]);
+  colors.push(accent);
+  values.push(bankTotal);
+
+  new Chart(document.getElementById('bridgeChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: colors,
+        borderRadius: 4,
+        barPercentage: 0.6,
+      }],
+    },
+    options: {
+      indexAxis: 'x',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => money(String(values[ctx.dataIndex])),
+          },
+        },
+      },
+      scales: {
+        y: { ticks: { callback: (v) => '₹' + fmt.format(v) } },
+        x: { ticks: { autoSkip: false, maxRotation: 40, minRotation: 20 } },
+      },
+    },
+  });
+}
+
+let REPORT = null;
+
+function renderExceptions(report) {
+  REPORT = report;
+  const buckets = [...new Set(report.exceptions.map(e => e.bucket))].sort();
+  const select = document.getElementById('bucketFilter');
+  select.innerHTML = '<option value="">All buckets</option>' +
+    buckets.map(b => `<option value="${b}">${b} (${report.exceptions.filter(e => e.bucket === b).length})</option>`).join('');
+  select.addEventListener('change', () => drawExceptionRows(report));
+  document.getElementById('search').addEventListener('input', () => drawExceptionRows(report));
+  drawExceptionRows(report);
+}
+
+function drawExceptionRows(report) {
+  const bucket = document.getElementById('bucketFilter').value;
+  const q = document.getElementById('search').value.trim().toLowerCase();
+  const rows = report.exceptions.filter(e => {
+    if (bucket && e.bucket !== bucket) return false;
+    if (!q) return true;
+    const haystack = [e.id, e.bucket, e.owner, e.explanation, ...(e.ledger_txn_ids || [])]
+      .join(' ').toLowerCase();
+    return haystack.includes(q);
+  });
+  const body = document.getElementById('excBody');
+  if (!rows.length) {
+    body.innerHTML = `<tr><td colspan="9" class="empty-state">No exceptions match this filter.</td></tr>`;
+    return;
+  }
+  body.innerHTML = rows.map(e => `
+    <tr>
+      <td><span class="pill severity-${e.severity}">${e.bucket}</span></td>
+      <td class="mono">${e.id}<br><span style="color:var(--muted)">${(e.ledger_txn_ids || []).join(', ')}</span></td>
+      <td class="mono">${e.ledger_amt != null ? money(e.ledger_amt) : '&mdash;'}</td>
+      <td class="mono">${e.bank_amt != null ? money(e.bank_amt) : '&mdash;'}</td>
+      <td class="mono">${e.diff != null ? money(e.diff) : '&mdash;'}</td>
+      <td>${e.owner || '&mdash;'}</td>
+      <td><span class="pill severity-${e.severity}">${e.severity}</span></td>
+      <td>${e.explanation}</td>
+      <td>${e.journal_entry || ''}</td>
+    </tr>`).join('');
+}
+
+function renderAssumptions(report) {
+  document.getElementById('assumptionsList').innerHTML =
+    report.assumptions.map(a => `<li>${a}</li>`).join('');
+}
+</script>
+</body>
+</html>
