@@ -239,22 +239,69 @@ function renderBridge(report) {
   const good = cssVar('--good') || '#1f9254';
   const bad = cssVar('--bad') || '#d1483c';
   const accent = cssVar('--accent') || '#2f6fed';
+  const neutral = cssVar('--muted') || '#9aa1ad';
+  const textColor = cssVar('--text') || '#1a1d23';
+
+  // Running totals (excluding the zero anchor the total bars are drawn from) --
+  // these set the y-axis range so the bridge steps aren't invisible slivers
+  // against a scale that starts at 0.
+  const runningTotals = [ledgerTotal];
+  let cum = ledgerTotal;
+  for (const step of steps) {
+    cum += parseFloat(bridge[step]);
+    runningTotals.push(cum);
+  }
+  runningTotals.push(bankTotal);
+  const yMin = Math.floor(Math.min(...runningTotals) / 5000) * 5000;
+  const yMax = Math.ceil(Math.max(...runningTotals) / 5000) * 5000 + 5000; // headroom for labels
 
   data.push([0, ledgerTotal]);
   colors.push(accent);
   values.push(ledgerTotal);
-  let cum = ledgerTotal;
+  cum = ledgerTotal;
   for (const step of steps) {
     const v = parseFloat(bridge[step]);
     const start = cum;
     cum += v;
     data.push([Math.min(start, cum), Math.max(start, cum)]);
-    colors.push(v === 0 ? '#9aa1ad' : (v > 0 ? good : bad));
+    colors.push(v === 0 ? neutral : (v > 0 ? good : bad));
     values.push(v);
   }
   data.push([0, bankTotal]);
   colors.push(accent);
   values.push(bankTotal);
+
+  // Draws a ₹ amount above every bar, and a visible tick mark for bars whose
+  // value (e.g. RESIDUAL, unmatched_refund) is too close to zero to show as
+  // a real bar -- so a correct zero still reads as "checked", not "missing".
+  const bridgeLabelsPlugin = {
+    id: 'bridgeLabels',
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+      const meta = chart.getDatasetMeta(0);
+      ctx.save();
+      ctx.font = '600 11px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillStyle = textColor;
+      ctx.textAlign = 'center';
+      meta.data.forEach((bar, i) => {
+        const { x, y, base, width } = bar.getProps(['x', 'y', 'base', 'width'], true);
+        const yTop = Math.min(y, base);
+        const yBottom = Math.max(y, base);
+        if (yBottom - yTop < 3) {
+          ctx.save();
+          ctx.strokeStyle = neutral;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(x - width / 2, yTop);
+          ctx.lineTo(x + width / 2, yTop);
+          ctx.stroke();
+          ctx.restore();
+        }
+        ctx.fillText(money(String(values[i])), x, yTop - 6);
+      });
+      ctx.restore();
+    },
+  };
 
   new Chart(document.getElementById('bridgeChart'), {
     type: 'bar',
@@ -267,8 +314,10 @@ function renderBridge(report) {
         barPercentage: 0.6,
       }],
     },
+    plugins: [bridgeLabelsPlugin],
     options: {
       indexAxis: 'x',
+      layout: { padding: { top: 24 } },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -278,7 +327,11 @@ function renderBridge(report) {
         },
       },
       scales: {
-        y: { ticks: { callback: (v) => '₹' + fmt.format(v) } },
+        y: {
+          min: yMin,
+          max: yMax,
+          ticks: { callback: (v) => '₹' + fmt.format(v) },
+        },
         x: { ticks: { autoSkip: false, maxRotation: 40, minRotation: 20 } },
       },
     },

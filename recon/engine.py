@@ -324,7 +324,7 @@ def _classify_unplaced_ledger(ledger_df: pd.DataFrame, ledger_assigned: dict,
             ledger_assigned[r.txn_id] = {
                 "bucket": DUPLICATE, "stage": None, "confidence": "high",
                 "unit_key": r.txn_id, "bank_row": None,
-                "extra": {"duplicate_of": sibling,
+                "extra": {"duplicate_of": sibling, "amount": r.amount, "fee": r.fee,
                           "why": (f"same merchant ({r.merchant_id}) and amount ({r.amount}) as "
                                   f"{sibling}, created within {DUPLICATE_WINDOW_SECONDS} seconds "
                                   "of it, and no settlement exists for this row")},
@@ -426,13 +426,17 @@ def _build_exceptions(ledger_df: pd.DataFrame, bank_df: pd.DataFrame,
         g["bank_row"] = ledger_assigned[r.txn_id].get("bank_row")
         g["extra"] = ledger_assigned[r.txn_id].get("extra", {})
 
-    # bank-only rows (and duplicate bank lines) have no ledger rows at all
+    # Bank rows whose own unit_key already has a group (rounding_variance, amount_mismatch,
+    # unmatched_refund, ...) just need their bank_row attached -- not a second exception.
+    # Only a bank row with no ledger-side counterpart at all (bank_only, duplicate_bank_line)
+    # gets a new, bank-only-keyed group.
     for b in bank_df.itertuples():
-        if b.bucket in (MATCHED, ROUNDING_VARIANCE) and b.ledger_txn_ids:
-            continue  # already represented via the ledger side
         if b.bucket == MATCHED:
             continue
-        key = f"bank_row_{b.row}"
+        key = bank_assigned[b.row].get("unit_key") or f"bank_row_{b.row}"
+        if key in groups:
+            groups[key]["bank_row"] = b.row
+            continue
         groups[key] = {
             "bucket": b.bucket, "ledger_txn_ids": list(b.ledger_txn_ids), "bank_row": b.row,
             "extra": bank_assigned[b.row].get("extra", {}),
@@ -458,7 +462,8 @@ def _build_exceptions(ledger_df: pd.DataFrame, bank_df: pd.DataFrame,
             "explanation": _explain(g["bucket"], g["extra"], g["ledger_txn_ids"]),
             "owner": OWNER.get(g["bucket"]),
             "severity": _severity(g["bucket"], g.get("extra", {})),
-            "journal_entry": _journal_entry(g["bucket"], ledger_amt, diff, g.get("extra", {})),
+            "journal_entry": _journal_entry(g["bucket"], ledger_amt, bank_amt, diff,
+                                             g.get("extra", {})),
             "details": {k: (str(v) if isinstance(v, Decimal) else v) for k, v in
                         g.get("extra", {}).items()},
         })
@@ -485,17 +490,35 @@ def _explain(bucket: str, extra: dict, ledger_txn_ids: list) -> str:
     return f"{bucket} ({len(ledger_txn_ids)} ledger row(s))."
 
 
-def _journal_entry(bucket: str, ledger_amt: Decimal, diff: Optional[Decimal], extra: dict) -> str:
+def _journal_entry(bucket: str, ledger_amt: Decimal, bank_amt: Optional[Decimal],
+                    diff: Optional[Decimal], extra: dict) -> str:
     if bucket == TIMING_DIFFERENCE:
         return f"No entry this period — Dr Settlement Receivable {ledger_amt} in Nov when it lands"
     if bucket == ROUNDING_VARIANCE:
-        return f"Dr/Cr Bank Charges {diff} (acquirer batch-fee rounding) / Cr/Dr Settlement Receivable"
+        # diff = bank_amount - ledger_expected_net: positive means the bank credited more
+        # than the per-line fees implied, so the receivable is understated and the fee
+        # overstated by the same amount, and vice versa.
+        if diff >= 0:
+            return (f"Dr Settlement Receivable {diff} / Cr Fee Expense {diff} "
+                     "(acquirer batch-fee rounding)")
+        amt = money(-diff)
+        return f"Dr Fee Expense {amt} / Cr Settlement Receivable {amt} (acquirer batch-fee rounding)"
     if bucket == DUPLICATE:
-        return f"Dr Suspense / Cr Sales {ledger_amt} (reverse the duplicate platform record)"
+        gross = extra.get("amount", ledger_amt)
+        fee = extra.get("fee", Decimal("0.00"))
+        return (f"Dr Sales {gross} / Cr Settlement Receivable {ledger_amt} / "
+                f"Cr Fee Expense {fee}")
     if bucket == UNMATCHED_REFUND:
         return f"Dr Refund Expense (unsupported) {-ledger_amt} / Cr Bank — escalate to Risk"
     if bucket == BANK_ONLY:
-        return f"Dr Bank Charges {extra.get('amount', '')} / Cr Bank".strip()
+        amount = bank_amt if bank_amt is not None else extra.get("amount")
+        if amount is None:
+            return "Dr Bank Charges / Cr Bank — identify counterpart"
+        if amount < 0:
+            amt = money(-amount)
+            return f"Dr Bank Charges {amt} / Cr Bank {amt}"
+        amt = money(amount)
+        return f"Dr Bank {amt} / Cr Unidentified Credit {amt} — identify counterpart"
     if bucket == AMOUNT_MISMATCH:
         return f"Dr/Cr Suspense {diff}, pending investigation with Bank Ops"
     if bucket == UNSETTLED:

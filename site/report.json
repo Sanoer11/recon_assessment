@@ -112,7 +112,7 @@
       "explanation": "each line's fee was rounded half-up individually; the bank/acquirer rounds once on the batch gross of 3840.33, giving a batch fee of 90.63 instead of the summed line fees of 90.64",
       "owner": "Finance",
       "severity": "low",
-      "journal_entry": "Dr/Cr Bank Charges 0.01 (acquirer batch-fee rounding) / Cr/Dr Settlement Receivable",
+      "journal_entry": "Dr Settlement Receivable 0.01 / Cr Fee Expense 0.01 (acquirer batch-fee rounding)",
       "details": {
         "gross": "3840.33",
         "sum_line_fees": "90.64",
@@ -155,7 +155,7 @@
       "explanation": "each line's fee was rounded half-up individually; the bank/acquirer rounds once on the batch gross of 38066.78, giving a batch fee of 898.38 instead of the summed line fees of 898.44",
       "owner": "Finance",
       "severity": "low",
-      "journal_entry": "Dr/Cr Bank Charges 0.06 (acquirer batch-fee rounding) / Cr/Dr Settlement Receivable",
+      "journal_entry": "Dr Settlement Receivable 0.06 / Cr Fee Expense 0.06 (acquirer batch-fee rounding)",
       "details": {
         "gross": "38066.78",
         "sum_line_fees": "898.44",
@@ -180,7 +180,7 @@
       "explanation": "each line's fee was rounded half-up individually; the bank/acquirer rounds once on the batch gross of 1198.00, giving a batch fee of 28.27 instead of the summed line fees of 28.28",
       "owner": "Finance",
       "severity": "low",
-      "journal_entry": "Dr/Cr Bank Charges 0.01 (acquirer batch-fee rounding) / Cr/Dr Settlement Receivable",
+      "journal_entry": "Dr Settlement Receivable 0.01 / Cr Fee Expense 0.01 (acquirer batch-fee rounding)",
       "details": {
         "gross": "1198.00",
         "sum_line_fees": "28.28",
@@ -206,7 +206,7 @@
       "explanation": "each line's fee was rounded half-up individually; the bank/acquirer rounds once on the batch gross of 1183.20, giving a batch fee of 27.92 instead of the summed line fees of 27.93",
       "owner": "Finance",
       "severity": "low",
-      "journal_entry": "Dr/Cr Bank Charges 0.01 (acquirer batch-fee rounding) / Cr/Dr Settlement Receivable",
+      "journal_entry": "Dr Settlement Receivable 0.01 / Cr Fee Expense 0.01 (acquirer batch-fee rounding)",
       "details": {
         "gross": "1183.20",
         "sum_line_fees": "27.93",
@@ -247,26 +247,8 @@
       "explanation": "Bank line with no ledger counterpart (e.g. a bank-levied charge).",
       "owner": "Bank Ops",
       "severity": "low",
-      "journal_entry": "Dr Bank Charges  / Cr Bank",
+      "journal_entry": "Dr Bank Charges 590.00 / Cr Bank 590.00",
       "details": {}
-    },
-    {
-      "id": "bank_row_95",
-      "bucket": "unmatched_refund",
-      "ledger_txn_ids": [
-        "txn_b3f61d8a4c07"
-      ],
-      "bank_row": 95,
-      "ledger_amt": "-1186.40",
-      "bank_amt": "-1186.40",
-      "diff": "0.00",
-      "explanation": "this refund and its bank debit agree with each other, but no sale of 1186.40 at M013 exists anywhere in the ledger \u2014 the variance effect is zero, but it is still a control exception",
-      "owner": "Risk",
-      "severity": "high",
-      "journal_entry": "Dr Refund Expense (unsupported) 1186.40 / Cr Bank \u2014 escalate to Risk",
-      "details": {
-        "why": "this refund and its bank debit agree with each other, but no sale of 1186.40 at M013 exists anywhere in the ledger \u2014 the variance effect is zero, but it is still a control exception"
-      }
     },
     {
       "id": "txn_00757a8b3fd5",
@@ -395,9 +377,11 @@
       "explanation": "same merchant (M006) and amount (1499.00) as txn_5c80f3a1e9b4, created within 600 seconds of it, and no settlement exists for this row",
       "owner": "Engineering",
       "severity": "medium",
-      "journal_entry": "Dr Suspense / Cr Sales 1463.62 (reverse the duplicate platform record)",
+      "journal_entry": "Dr Sales 1499.00 / Cr Settlement Receivable 1463.62 / Cr Fee Expense 35.38",
       "details": {
         "duplicate_of": "txn_5c80f3a1e9b4",
+        "amount": "1499.00",
+        "fee": "35.38",
         "why": "same merchant (M006) and amount (1499.00) as txn_5c80f3a1e9b4, created within 600 seconds of it, and no settlement exists for this row"
       }
     },
