@@ -1,0 +1,4759 @@
+{
+  "meta": {
+    "seed": 20261031,
+    "currency": "INR",
+    "timezone": "Asia/Kolkata (+05:30)",
+    "period": {
+      "start": "2026-10-01",
+      "end": "2026-10-31"
+    },
+    "opening_balance": "500000.00",
+    "closing_balance": "1263514.04",
+    "fee_rate": "0.0236",
+    "bank_row_numbering": "1-based data row in bank_statement.csv, header excluded; row 1 is the opening-balance row",
+    "counts": {
+      "ledger_rows": 504,
+      "sales": 500,
+      "refunds": 4,
+      "bank_rows": 379,
+      "nov_lookahead_rows": 14
+    }
+  },
+  "buckets": {
+    "matched": "ledger row(s) and bank row agree exactly",
+    "timing_difference": "ledger row whose settlement falls after the period end",
+    "rounding_variance": "batch matched by membership; amount differs by a few paise from aggregate fee rounding",
+    "duplicate": "ledger row that duplicates another ledger row; never settles",
+    "unmatched_refund": "refund (ledger + bank) whose original sale is in neither file",
+    "bank_only": "bank row with no ledger counterpart (bank charges)",
+    "non_transaction": "statement furniture, e.g. opening balance"
+  },
+  "planted_gaps": [
+    {
+      "id": "GAP_A_LATE_SETTLEMENT",
+      "kind": "late_settlement",
+      "expected_bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_e41b07c9d2a6"
+      ],
+      "bank_rows": [],
+      "details": {
+        "created_at": "2026-10-31T18:42:19+05:30",
+        "amount": "2350.00",
+        "fee": "55.46",
+        "expected_bank_amount": "2294.54",
+        "expected_settle_date": "2026-11-02",
+        "why": "Sat 31 Oct is a working 5th Saturday; +1 business day = Mon 2 Nov, after the statement closes."
+      }
+    },
+    {
+      "id": "GAP_B_AGGREGATE_ROUNDING",
+      "kind": "aggregate_rounding",
+      "expected_bucket": "rounding_variance",
+      "ledger_txn_ids": [
+        "txn_5ed2bec32dce",
+        "txn_35feae698e58",
+        "txn_42793710fae2",
+        "txn_36bc05aa9584",
+        "txn_749d19afbbf0",
+        "txn_a5f2c7d5ecae",
+        "txn_4e108673e847",
+        "txn_dab178ad0029",
+        "txn_73d1fa8e24c0",
+        "txn_148ad24123fb",
+        "txn_ab2bfbbea52a",
+        "txn_4f7e403dcafc",
+        "txn_77fd266766c2",
+        "txn_4391fea28e48",
+        "txn_5687c80f0eb0",
+        "txn_afe7c1c0621d",
+        "txn_e8048998c10d",
+        "txn_962f627c739d",
+        "txn_4469df82dd06",
+        "txn_a0b84ba3f51a"
+      ],
+      "bank_rows": [
+        188
+      ],
+      "bank_references": [
+        "PAYGW SETTL BM01120261015"
+      ],
+      "details": {
+        "batch_id": "B-M011-20261015",
+        "n_txns": 20,
+        "gross": "38066.78",
+        "sum_line_fees": "898.44",
+        "bank_batch_fee": "898.38",
+        "ledger_expected_net": "37168.34",
+        "bank_amount": "37168.40",
+        "delta": "0.06",
+        "why": "each line fee rounded half-up individually; bank rounds once on the batch gross"
+      }
+    },
+    {
+      "id": "GAP_C_LEDGER_DUPLICATE",
+      "kind": "duplicate_in_ledger",
+      "expected_bucket": "duplicate",
+      "ledger_txn_ids": [
+        "txn_9d27b6e0c315"
+      ],
+      "bank_rows": [],
+      "details": {
+        "duplicate_of": "txn_5c80f3a1e9b4",
+        "original_matched_bank_row": 257,
+        "original_bank_reference": "NEFT/UTIBN26295756925/PAYGW SETTL txn_5c80f3a1e9b4",
+        "seconds_apart": 5,
+        "amount": "1499.00",
+        "merchant_id": "M006",
+        "why": "client double-submit created two platform records; the acquirer captured once, so only one settlement exists. The original is an ordinary match."
+      }
+    },
+    {
+      "id": "GAP_D_ORPHAN_REFUND",
+      "kind": "refund_without_original",
+      "expected_bucket": "unmatched_refund",
+      "ledger_txn_ids": [
+        "txn_b3f61d8a4c07"
+      ],
+      "bank_rows": [
+        95
+      ],
+      "bank_references": [
+        "PAYGW RFND txn_b3f61d8a4c07"
+      ],
+      "details": {
+        "amount": "-1186.40",
+        "merchant_id": "M013",
+        "original_sale": "sale of 1186.40 at M013 on 2026-09-24, before the window",
+        "why": "refund and its bank debit agree; the sale it reverses is absent from both files"
+      }
+    }
+  ],
+  "natural_exceptions": [
+    {
+      "kind": "month_end_spillover",
+      "expected_bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_450faf24e3d5"
+      ],
+      "bank_rows": [],
+      "details": {
+        "settlement_key": "B-M001-20261030",
+        "capture_date": "2026-10-30",
+        "expected_settle_date": "2026-11-02",
+        "expected_bank_amount": "1040.08"
+      }
+    },
+    {
+      "kind": "month_end_spillover",
+      "expected_bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_379761a49e0c",
+        "txn_31de0a878bc2",
+        "txn_c8c419531389"
+      ],
+      "bank_rows": [],
+      "details": {
+        "settlement_key": "B-M002-20261031",
+        "capture_date": "2026-10-31",
+        "expected_settle_date": "2026-11-02",
+        "expected_bank_amount": "5448.98"
+      }
+    },
+    {
+      "kind": "month_end_spillover",
+      "expected_bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_4e42ba9e2f3e"
+      ],
+      "bank_rows": [],
+      "details": {
+        "settlement_key": "txn_4e42ba9e2f3e",
+        "capture_date": "2026-10-31",
+        "expected_settle_date": "2026-11-02",
+        "expected_bank_amount": "194.30"
+      }
+    },
+    {
+      "kind": "month_end_spillover",
+      "expected_bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_ab17e5ef3fcd"
+      ],
+      "bank_rows": [],
+      "details": {
+        "settlement_key": "txn_ab17e5ef3fcd",
+        "capture_date": "2026-10-30",
+        "expected_settle_date": "2026-11-02",
+        "expected_bank_amount": "584.86"
+      }
+    },
+    {
+      "kind": "month_end_spillover",
+      "expected_bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_e2170f2e398a"
+      ],
+      "bank_rows": [],
+      "details": {
+        "settlement_key": "txn_e2170f2e398a",
+        "capture_date": "2026-10-31",
+        "expected_settle_date": "2026-11-02",
+        "expected_bank_amount": "877.78"
+      }
+    },
+    {
+      "kind": "month_end_spillover",
+      "expected_bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_fc245716793e"
+      ],
+      "bank_rows": [],
+      "details": {
+        "settlement_key": "txn_fc245716793e",
+        "capture_date": "2026-10-31",
+        "expected_settle_date": "2026-11-02",
+        "expected_bank_amount": "1011.95"
+      }
+    },
+    {
+      "kind": "month_end_spillover",
+      "expected_bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_00757a8b3fd5"
+      ],
+      "bank_rows": [],
+      "details": {
+        "settlement_key": "txn_00757a8b3fd5",
+        "capture_date": "2026-10-31",
+        "expected_settle_date": "2026-11-02",
+        "expected_bank_amount": "2537.33"
+      }
+    },
+    {
+      "kind": "month_end_spillover",
+      "expected_bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_79f62d16f6b4"
+      ],
+      "bank_rows": [],
+      "details": {
+        "settlement_key": "txn_79f62d16f6b4",
+        "capture_date": "2026-10-31",
+        "expected_settle_date": "2026-11-02",
+        "expected_bank_amount": "792.03"
+      }
+    },
+    {
+      "kind": "month_end_spillover",
+      "expected_bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_695f0748e6db"
+      ],
+      "bank_rows": [],
+      "details": {
+        "settlement_key": "txn_695f0748e6db",
+        "capture_date": "2026-10-31",
+        "expected_settle_date": "2026-11-03",
+        "expected_bank_amount": "194.30"
+      }
+    },
+    {
+      "kind": "month_end_spillover",
+      "expected_bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_76d9932c4119"
+      ],
+      "bank_rows": [],
+      "details": {
+        "settlement_key": "B-M005-20261031",
+        "capture_date": "2026-10-31",
+        "expected_settle_date": "2026-11-03",
+        "expected_bank_amount": "2187.57"
+      }
+    },
+    {
+      "kind": "month_end_spillover",
+      "expected_bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_240774ad4a02"
+      ],
+      "bank_rows": [],
+      "details": {
+        "settlement_key": "txn_240774ad4a02",
+        "capture_date": "2026-10-31",
+        "expected_settle_date": "2026-11-03",
+        "expected_bank_amount": "361.90"
+      }
+    },
+    {
+      "kind": "month_end_spillover",
+      "expected_bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_2742e37f4f74"
+      ],
+      "bank_rows": [],
+      "details": {
+        "settlement_key": "txn_2742e37f4f74",
+        "capture_date": "2026-10-31",
+        "expected_settle_date": "2026-11-03",
+        "expected_bank_amount": "850.16"
+      }
+    },
+    {
+      "kind": "month_end_spillover",
+      "expected_bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_af6872f3684e"
+      ],
+      "bank_rows": [],
+      "details": {
+        "settlement_key": "B-M011-20261031",
+        "capture_date": "2026-10-31",
+        "expected_settle_date": "2026-11-03",
+        "expected_bank_amount": "1756.54"
+      }
+    },
+    {
+      "kind": "aggregate_rounding",
+      "expected_bucket": "rounding_variance",
+      "ledger_txn_ids": [
+        "txn_349fc4b81d74",
+        "txn_eff83b880040"
+      ],
+      "bank_rows": [
+        140
+      ],
+      "bank_references": [
+        "NEFT/HDFCN26286765386/PAYGW BATCH B-M011-20261010"
+      ],
+      "details": {
+        "batch_id": "B-M011-20261010",
+        "delta": "0.01"
+      }
+    },
+    {
+      "kind": "aggregate_rounding",
+      "expected_bucket": "rounding_variance",
+      "ledger_txn_ids": [
+        "txn_fd3a7e84aab7",
+        "txn_ef4a4a12d510"
+      ],
+      "bank_rows": [
+        225
+      ],
+      "bank_references": [
+        "NEFT/HDFCN26292246529/PAYGW BATCH B-M011-20261017"
+      ],
+      "details": {
+        "batch_id": "B-M011-20261017",
+        "delta": "0.01"
+      }
+    },
+    {
+      "kind": "aggregate_rounding",
+      "expected_bucket": "rounding_variance",
+      "ledger_txn_ids": [
+        "txn_fe4f709d4a3c",
+        "txn_ee53f75b327a",
+        "txn_0427784131b0"
+      ],
+      "bank_rows": [
+        320
+      ],
+      "bank_references": [
+        "PAYGW SETTL BM01120261023"
+      ],
+      "details": {
+        "batch_id": "B-M011-20261023",
+        "delta": "0.01"
+      }
+    }
+  ],
+  "decoys": [
+    {
+      "kind": "same_merchant_same_amount",
+      "expected_bucket": "matched",
+      "ledger_txn_ids": [
+        "txn_2a6e91f4b870"
+      ],
+      "looks_like": "txn_5c80f3a1e9b4",
+      "why": "same merchant and amount as the duplicate pair, but two days later"
+    },
+    {
+      "kind": "refund_with_original",
+      "expected_bucket": "matched",
+      "ledger_txn_ids": [
+        "txn_64b954de3eba"
+      ],
+      "original_txn_id": "txn_0d5aeaf468ae",
+      "bank_rows": [
+        83
+      ],
+      "why": "full refund of an October sale present in the ledger"
+    },
+    {
+      "kind": "refund_with_original",
+      "expected_bucket": "matched",
+      "ledger_txn_ids": [
+        "txn_f87cb407d41a"
+      ],
+      "original_txn_id": "txn_9924e335eaf4",
+      "bank_rows": [
+        125
+      ],
+      "why": "full refund of an October sale present in the ledger"
+    },
+    {
+      "kind": "refund_with_original",
+      "expected_bucket": "matched",
+      "ledger_txn_ids": [
+        "txn_33b42ed0dd5d"
+      ],
+      "original_txn_id": "txn_898933c9fe04",
+      "bank_rows": [
+        159
+      ],
+      "why": "full refund of an October sale present in the ledger"
+    }
+  ],
+  "bank_only": [
+    {
+      "bank_row": 379,
+      "reference": "ACCT MAINT CHGS OCT26 INCL GST",
+      "amount": "-590.00",
+      "expected_bucket": "bank_only"
+    }
+  ],
+  "non_transaction": [
+    {
+      "bank_row": 1,
+      "reference": "BAL B/F",
+      "expected_bucket": "non_transaction"
+    }
+  ],
+  "matches": [
+    {
+      "bank_row": 2,
+      "reference": "PAYGW SETTL BM00120261002",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_d10dd81861d5"
+      ],
+      "amount": "652.22"
+    },
+    {
+      "bank_row": 3,
+      "reference": "NEFT/HDFCN26276934889/PAYGW SETTL txn_169c8719229a",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_169c8719229a"
+      ],
+      "amount": "340.76"
+    },
+    {
+      "bank_row": 4,
+      "reference": "PAYGW/132B1DB8C9",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_132b1db8c905"
+      ],
+      "amount": "1292.90"
+    },
+    {
+      "bank_row": 5,
+      "reference": "PAYGW/C4A80AB09A",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_c4a80ab09aa0"
+      ],
+      "amount": "3416.42"
+    },
+    {
+      "bank_row": 6,
+      "reference": "NEFT/UTIBN26276335602/PAYGW BATCH B-M005-20261001",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_a2e204320337"
+      ],
+      "amount": "1804.57"
+    },
+    {
+      "bank_row": 7,
+      "reference": "PAYGW/38638860E1",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_38638860e1e7"
+      ],
+      "amount": "362.76"
+    },
+    {
+      "bank_row": 8,
+      "reference": "PAYGW/A4C0352961",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_a4c035296186"
+      ],
+      "amount": "1268.34"
+    },
+    {
+      "bank_row": 9,
+      "reference": "NEFT/UTIBN26276799691/PAYGW SETTL txn_be67c53ac4f6",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_be67c53ac4f6"
+      ],
+      "amount": "1258.03"
+    },
+    {
+      "bank_row": 10,
+      "reference": "NEFT/UTIBN26276568824/PAYGW SETTL txn_69483bfd744e",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_69483bfd744e"
+      ],
+      "amount": "7810.22"
+    },
+    {
+      "bank_row": 11,
+      "reference": "PAYGW SETTL BM01120261002",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_d9fbd96ea88b"
+      ],
+      "amount": "737.82"
+    },
+    {
+      "bank_row": 12,
+      "reference": "PAYGW/6EA421E824",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_6ea421e82414"
+      ],
+      "amount": "1224.29"
+    },
+    {
+      "bank_row": 13,
+      "reference": "NEFT/HDFCN26276044630/PAYGW BATCH B-M014-20261002",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_33fb84b410f4",
+        "txn_7fe891318e49"
+      ],
+      "amount": "5486.30"
+    },
+    {
+      "bank_row": 14,
+      "reference": "HDFCN26276510983-STL-TXN7ACBA18FC315-M015",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_7acba18fc315"
+      ],
+      "amount": "268.93"
+    },
+    {
+      "bank_row": 15,
+      "reference": "PAYGW/FACEA8D0CE",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_facea8d0ce76"
+      ],
+      "amount": "2099.52"
+    },
+    {
+      "bank_row": 16,
+      "reference": "HDFCN26276846343-STL-TXNF1FE2113DD3B-M018",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_f1fe2113dd3b"
+      ],
+      "amount": "1268.34"
+    },
+    {
+      "bank_row": 17,
+      "reference": "PAYGW SETTL BM01920261002",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_117a0e821f60"
+      ],
+      "amount": "1415.07"
+    },
+    {
+      "bank_row": 18,
+      "reference": "HDFCN26276649519-STL-TXN46E6F6D3BA65-M020",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_46e6f6d3ba65"
+      ],
+      "amount": "1370.57"
+    },
+    {
+      "bank_row": 19,
+      "reference": "PAYGW SETTL BM00120261001",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_4d2771b035ef",
+        "txn_911a5260c36e"
+      ],
+      "amount": "1781.57"
+    },
+    {
+      "bank_row": 20,
+      "reference": "NEFT/UTIBN26278805568/PAYGW BATCH B-M001-20261003",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_3d209c71e00e"
+      ],
+      "amount": "340.76"
+    },
+    {
+      "bank_row": 21,
+      "reference": "NEFT/HDFCN26278646380/PAYGW BATCH B-M002-20261003",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_5101993afac9",
+        "txn_b661a77739d5",
+        "txn_07ec83e18d37",
+        "txn_d81e0c328458"
+      ],
+      "amount": "6272.34"
+    },
+    {
+      "bank_row": 22,
+      "reference": "PAYGW SETTL BM00220261004",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_25bfeafbbbf2",
+        "txn_8c4000a960c6"
+      ],
+      "amount": "1531.10"
+    },
+    {
+      "bank_row": 23,
+      "reference": "NEFT/HDFCN26278270915/PAYGW SETTL txn_cc0094cb98dc",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_cc0094cb98dc"
+      ],
+      "amount": "291.94"
+    },
+    {
+      "bank_row": 24,
+      "reference": "UTIBN26278422953-STL-TXNFC008AE9E2CE-M003",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_fc008ae9e2ce"
+      ],
+      "amount": "340.76"
+    },
+    {
+      "bank_row": 25,
+      "reference": "NEFT/UTIBN26278384882/PAYGW SETTL txn_ee907f29bf4a",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_ee907f29bf4a"
+      ],
+      "amount": "2123.83"
+    },
+    {
+      "bank_row": 26,
+      "reference": "PAYGW SETTL BM00820261001",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_f54a444be7d4"
+      ],
+      "amount": "1045.27"
+    },
+    {
+      "bank_row": 27,
+      "reference": "NEFT/UTIBN26278773892/PAYGW BATCH B-M008-20261003",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_517dbabac59e"
+      ],
+      "amount": "1020.20"
+    },
+    {
+      "bank_row": 28,
+      "reference": "PAYGW SETTL BM00820261004",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_edcf3fa043de",
+        "txn_001cc26124b2"
+      ],
+      "amount": "7406.67"
+    },
+    {
+      "bank_row": 29,
+      "reference": "PAYGW SETTL BM01120261003",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_b37252a36b86"
+      ],
+      "amount": "780.14"
+    },
+    {
+      "bank_row": 30,
+      "reference": "PAYGW SETTL BM01120261004",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_0f72a53fec17"
+      ],
+      "amount": "524.81"
+    },
+    {
+      "bank_row": 31,
+      "reference": "UTIBN26278149539-STL-TXN5B209AC7D9E1-M012",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_5b209ac7d9e1"
+      ],
+      "amount": "813.53"
+    },
+    {
+      "bank_row": 32,
+      "reference": "NEFT/HDFCN26278143799/PAYGW SETTL txn_b0f0ab2bd53d",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_b0f0ab2bd53d"
+      ],
+      "amount": "476.74"
+    },
+    {
+      "bank_row": 33,
+      "reference": "NEFT/HDFCN26278998259/PAYGW BATCH B-M014-20261003",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_4a7f28eb7664"
+      ],
+      "amount": "360.71"
+    },
+    {
+      "bank_row": 34,
+      "reference": "PAYGW SETTL BM01420261004",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_f19d316aeedd",
+        "txn_a75d3a9f5acf"
+      ],
+      "amount": "1994.96"
+    },
+    {
+      "bank_row": 35,
+      "reference": "NEFT/UTIBN26278101275/PAYGW SETTL txn_053ebd25ca39",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_053ebd25ca39"
+      ],
+      "amount": "586.63"
+    },
+    {
+      "bank_row": 36,
+      "reference": "HDFCN26278903118-STL-TXNCAB5ECDA2E94-M015",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_cab5ecda2e94"
+      ],
+      "amount": "678.53"
+    },
+    {
+      "bank_row": 37,
+      "reference": "NEFT/UTIBN26278862075/PAYGW SETTL txn_5ff9d358bbe7",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_5ff9d358bbe7"
+      ],
+      "amount": "389.58"
+    },
+    {
+      "bank_row": 38,
+      "reference": "NEFT/UTIBN26279135450/PAYGW BATCH B-M001-20261004",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_0d5aeaf468ae"
+      ],
+      "amount": "645.43"
+    },
+    {
+      "bank_row": 39,
+      "reference": "NEFT/HDFCN26279738358/PAYGW BATCH B-M002-20261005",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_255d0bc7cbd7",
+        "txn_78ff63d3344b",
+        "txn_8266a2c84365"
+      ],
+      "amount": "3595.77"
+    },
+    {
+      "bank_row": 40,
+      "reference": "PAYGW/3294D2C628",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_3294d2c6282a"
+      ],
+      "amount": "349.98"
+    },
+    {
+      "bank_row": 41,
+      "reference": "NEFT/HDFCN26279306185/PAYGW SETTL txn_639edf4521a8",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_639edf4521a8"
+      ],
+      "amount": "1951.82"
+    },
+    {
+      "bank_row": 42,
+      "reference": "PAYGW/8354F5EF88",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_8354f5ef8847"
+      ],
+      "amount": "664.48"
+    },
+    {
+      "bank_row": 43,
+      "reference": "PAYGW/4A456A19D8",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_4a456a19d8c5"
+      ],
+      "amount": "1011.16"
+    },
+    {
+      "bank_row": 44,
+      "reference": "NEFT/HDFCN26279812583/PAYGW SETTL txn_8bc65428e4f3",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_8bc65428e4f3"
+      ],
+      "amount": "975.42"
+    },
+    {
+      "bank_row": 45,
+      "reference": "UTIBN26279018707-STL-TXN9924E335EAF4-M004",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_9924e335eaf4"
+      ],
+      "amount": "180.94"
+    },
+    {
+      "bank_row": 46,
+      "reference": "HDFCN26279874474-STL-TXNB8D5F18F8A7A-M004",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_b8d5f18f8a7a"
+      ],
+      "amount": "429.39"
+    },
+    {
+      "bank_row": 47,
+      "reference": "NEFT/HDFCN26279701338/PAYGW SETTL txn_171a5d4b52b9",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_171a5d4b52b9"
+      ],
+      "amount": "1334.14"
+    },
+    {
+      "bank_row": 48,
+      "reference": "PAYGW SETTL BM00820261005",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_dadb9ecb1d70"
+      ],
+      "amount": "2661.51"
+    },
+    {
+      "bank_row": 49,
+      "reference": "HDFCN26279958822-STL-TXNB46B151B009C-M009",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_b46b151b009c"
+      ],
+      "amount": "1756.54"
+    },
+    {
+      "bank_row": 50,
+      "reference": "PAYGW/D5F05660A4",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_d5f05660a455"
+      ],
+      "amount": "495.24"
+    },
+    {
+      "bank_row": 51,
+      "reference": "PAYGW/ACE4DDEBA3",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_ace4ddeba3a9"
+      ],
+      "amount": "4881.02"
+    },
+    {
+      "bank_row": 52,
+      "reference": "PAYGW SETTL BM01120261005",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_0e6a5c7dda00",
+        "txn_37072262211c"
+      ],
+      "amount": "3325.18"
+    },
+    {
+      "bank_row": 53,
+      "reference": "NEFT/UTIBN26279372208/PAYGW SETTL txn_cfbbe4786924",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_cfbbe4786924"
+      ],
+      "amount": "410.12"
+    },
+    {
+      "bank_row": 54,
+      "reference": "NEFT/UTIBN26279796838/PAYGW SETTL txn_7095d59566de",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_7095d59566de"
+      ],
+      "amount": "389.58"
+    },
+    {
+      "bank_row": 55,
+      "reference": "NEFT/HDFCN26280448370/PAYGW BATCH B-M001-20261005",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_c7918a67899d",
+        "txn_d6839b4b3508"
+      ],
+      "amount": "3708.36"
+    },
+    {
+      "bank_row": 56,
+      "reference": "NEFT/UTIBN26280977467/PAYGW BATCH B-M002-20261006",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_f2c6f27ef327"
+      ],
+      "amount": "1432.88"
+    },
+    {
+      "bank_row": 57,
+      "reference": "HDFCN26280320526-STL-TXNCA64BD6ABDF4-M003",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_ca64bd6abdf4"
+      ],
+      "amount": "584.86"
+    },
+    {
+      "bank_row": 58,
+      "reference": "PAYGW/48CC9698D1",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_48cc9698d115"
+      ],
+      "amount": "7810.22"
+    },
+    {
+      "bank_row": 59,
+      "reference": "PAYGW SETTL BM00820261006",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_1134a5d29a98"
+      ],
+      "amount": "2709.80"
+    },
+    {
+      "bank_row": 60,
+      "reference": "NEFT/UTIBN26280330627/PAYGW SETTL txn_61b8dac96d70",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_61b8dac96d70"
+      ],
+      "amount": "243.12"
+    },
+    {
+      "bank_row": 61,
+      "reference": "PAYGW SETTL BM01120261006",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_a0f7b690d325"
+      ],
+      "amount": "1463.62"
+    },
+    {
+      "bank_row": 62,
+      "reference": "NEFT/UTIBN26280716167/PAYGW SETTL txn_ea4aaf7b87cb",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_ea4aaf7b87cb"
+      ],
+      "amount": "4051.82"
+    },
+    {
+      "bank_row": 63,
+      "reference": "NEFT/UTIBN26280747011/PAYGW BATCH B-M014-20261006",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_174af2d59857"
+      ],
+      "amount": "558.76"
+    },
+    {
+      "bank_row": 64,
+      "reference": "PAYGW SETTL BM01920261006",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_a3c66672739c"
+      ],
+      "amount": "1298.10"
+    },
+    {
+      "bank_row": 65,
+      "reference": "NEFT/UTIBN26281036679/PAYGW BATCH B-M001-20261006",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_0c973707f6a6",
+        "txn_21a70264de36",
+        "txn_8529a9541bd3",
+        "txn_0d680e661091"
+      ],
+      "amount": "3149.51"
+    },
+    {
+      "bank_row": 66,
+      "reference": "PAYGW SETTL BM00120261007",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_bfe43f9b27e8",
+        "txn_6fe1c8591b6b"
+      ],
+      "amount": "3890.71"
+    },
+    {
+      "bank_row": 67,
+      "reference": "NEFT/UTIBN26281624112/PAYGW BATCH B-M002-20261007",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_fdb05a552435",
+        "txn_eea5ab1c7b97",
+        "txn_147f58673747"
+      ],
+      "amount": "2559.33"
+    },
+    {
+      "bank_row": 68,
+      "reference": "PAYGW/346381223D",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_346381223db4"
+      ],
+      "amount": "877.78"
+    },
+    {
+      "bank_row": 69,
+      "reference": "NEFT/HDFCN26281264966/PAYGW SETTL txn_d868ecaeec9e",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_d868ecaeec9e"
+      ],
+      "amount": "1567.47"
+    },
+    {
+      "bank_row": 70,
+      "reference": "PAYGW/0D4F141649",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_0d4f1416490f"
+      ],
+      "amount": "340.76"
+    },
+    {
+      "bank_row": 71,
+      "reference": "NEFT/HDFCN26281537475/PAYGW BATCH B-M005-20261006",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_6cc84952ab79"
+      ],
+      "amount": "3129.65"
+    },
+    {
+      "bank_row": 72,
+      "reference": "PAYGW SETTL BM00520261007",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_302fe02a9cb8"
+      ],
+      "amount": "733.43"
+    },
+    {
+      "bank_row": 73,
+      "reference": "PAYGW/009FAC441C",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_009fac441c88"
+      ],
+      "amount": "487.22"
+    },
+    {
+      "bank_row": 74,
+      "reference": "UTIBN26281787546-STL-TXN3D139F03FFE4-M006",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_3d139f03ffe4"
+      ],
+      "amount": "194.30"
+    },
+    {
+      "bank_row": 75,
+      "reference": "PAYGW/F92D5B3488",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_f92d5b3488f2"
+      ],
+      "amount": "291.94"
+    },
+    {
+      "bank_row": 76,
+      "reference": "PAYGW/3E3A5A0955",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_3e3a5a095516"
+      ],
+      "amount": "2440.02"
+    },
+    {
+      "bank_row": 77,
+      "reference": "PAYGW/DC94222139",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_dc942221396e"
+      ],
+      "amount": "682.50"
+    },
+    {
+      "bank_row": 78,
+      "reference": "PAYGW/273275CFB2",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_273275cfb252"
+      ],
+      "amount": "877.78"
+    },
+    {
+      "bank_row": 79,
+      "reference": "UTIBN26281063525-STL-TXN167608C8F5F4-M013",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_167608c8f5f4"
+      ],
+      "amount": "487.22"
+    },
+    {
+      "bank_row": 80,
+      "reference": "NEFT/UTIBN26281527448/PAYGW SETTL txn_2aa5d416fd46",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_2aa5d416fd46"
+      ],
+      "amount": "2440.02"
+    },
+    {
+      "bank_row": 81,
+      "reference": "UTIBN26281771518-STL-TXN08FF033B17A3-M015",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_08ff033b17a3"
+      ],
+      "amount": "9713.01"
+    },
+    {
+      "bank_row": 82,
+      "reference": "NEFT/UTIBN26281938720/PAYGW BATCH B-M017-20261007",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_128dc25927e2"
+      ],
+      "amount": "438.40"
+    },
+    {
+      "bank_row": 83,
+      "reference": "PAYGW RFND txn_64b954de3eba",
+      "kind": "refund",
+      "ledger_txn_ids": [
+        "txn_64b954de3eba"
+      ],
+      "amount": "-661.03"
+    },
+    {
+      "bank_row": 84,
+      "reference": "PAYGW SETTL BM00220261008",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_5eea80027877",
+        "txn_327c6ffd62a2"
+      ],
+      "amount": "591.65"
+    },
+    {
+      "bank_row": 85,
+      "reference": "PAYGW/6AA8D09C37",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_6aa8d09c37ce"
+      ],
+      "amount": "780.14"
+    },
+    {
+      "bank_row": 86,
+      "reference": "PAYGW/E518BB94DF",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_e518bb94df6e"
+      ],
+      "amount": "405.33"
+    },
+    {
+      "bank_row": 87,
+      "reference": "NEFT/UTIBN26282280376/PAYGW SETTL txn_f6ce4513d126",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_f6ce4513d126"
+      ],
+      "amount": "5762.96"
+    },
+    {
+      "bank_row": 88,
+      "reference": "NEFT/UTIBN26282982218/PAYGW BATCH B-M008-20261007",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_8f8666977c0c"
+      ],
+      "amount": "340.76"
+    },
+    {
+      "bank_row": 89,
+      "reference": "UTIBN26282287394-STL-TXN48E5106F8123-M009",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_48e5106f8123"
+      ],
+      "amount": "1974.88"
+    },
+    {
+      "bank_row": 90,
+      "reference": "NEFT/HDFCN26282646212/PAYGW BATCH B-M011-20261007",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_f0990a866b48"
+      ],
+      "amount": "487.22"
+    },
+    {
+      "bank_row": 91,
+      "reference": "PAYGW SETTL BM01120261008",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_1667391d58ea",
+        "txn_c1f94db840a5"
+      ],
+      "amount": "5289.50"
+    },
+    {
+      "bank_row": 92,
+      "reference": "NEFT/HDFCN26282535121/PAYGW SETTL txn_1e1fc5cb13fb",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_1e1fc5cb13fb"
+      ],
+      "amount": "1756.54"
+    },
+    {
+      "bank_row": 93,
+      "reference": "PAYGW SETTL BM01420261008",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_acdaab204459",
+        "txn_4e755cff8d33"
+      ],
+      "amount": "2170.94"
+    },
+    {
+      "bank_row": 94,
+      "reference": "NEFT/HDFCN26282702171/PAYGW BATCH B-M019-20261008",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_2e822c0b4c9c"
+      ],
+      "amount": "351.84"
+    },
+    {
+      "bank_row": 96,
+      "reference": "PAYGW SETTL BM00120261008",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_37cd868fa0e9",
+        "txn_2e072402ed45"
+      ],
+      "amount": "4196.56"
+    },
+    {
+      "bank_row": 97,
+      "reference": "NEFT/HDFCN26285067523/PAYGW BATCH B-M001-20261009",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_dc3f58d03e61",
+        "txn_4464b859ca76"
+      ],
+      "amount": "4666.81"
+    },
+    {
+      "bank_row": 98,
+      "reference": "NEFT/HDFCN26285534354/PAYGW BATCH B-M002-20261009",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_840b9ec7ab93"
+      ],
+      "amount": "7810.22"
+    },
+    {
+      "bank_row": 99,
+      "reference": "PAYGW SETTL BM00220261010",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_456e2c2640d8"
+      ],
+      "amount": "2553.78"
+    },
+    {
+      "bank_row": 100,
+      "reference": "HDFCN26285041699-STL-TXN51EDCABC1419-M003",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_51edcabc1419"
+      ],
+      "amount": "573.76"
+    },
+    {
+      "bank_row": 101,
+      "reference": "HDFCN26285545992-STL-TXN9A57A8786189-M003",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_9a57a8786189"
+      ],
+      "amount": "682.50"
+    },
+    {
+      "bank_row": 102,
+      "reference": "NEFT/HDFCN26285358050/PAYGW SETTL txn_cf081a90660e",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_cf081a90660e"
+      ],
+      "amount": "605.54"
+    },
+    {
+      "bank_row": 103,
+      "reference": "UTIBN26285367425-STL-TXN9BAE5786AD91-M004",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_9bae5786ad91"
+      ],
+      "amount": "2440.02"
+    },
+    {
+      "bank_row": 104,
+      "reference": "NEFT/HDFCN26285871591/PAYGW SETTL txn_fa122664b403",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_fa122664b403"
+      ],
+      "amount": "4881.02"
+    },
+    {
+      "bank_row": 105,
+      "reference": "NEFT/HDFCN26285875340/PAYGW BATCH B-M005-20261010",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_635b3a57d6e0",
+        "txn_84b6963382fd"
+      ],
+      "amount": "3451.57"
+    },
+    {
+      "bank_row": 106,
+      "reference": "HDFCN26285111192-STL-TXN20BE532D0B20-M006",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_20be532d0b20"
+      ],
+      "amount": "1170.70"
+    },
+    {
+      "bank_row": 107,
+      "reference": "NEFT/UTIBN26285446906/PAYGW SETTL txn_37c3c28fe75a",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_37c3c28fe75a"
+      ],
+      "amount": "2230.45"
+    },
+    {
+      "bank_row": 108,
+      "reference": "UTIBN26285187144-STL-TXN573C71150E12-M006",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_573c71150e12"
+      ],
+      "amount": "606.44"
+    },
+    {
+      "bank_row": 109,
+      "reference": "UTIBN26285049327-STL-TXN9628C7B4C678-M006",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_9628c7b4c678"
+      ],
+      "amount": "1756.54"
+    },
+    {
+      "bank_row": 110,
+      "reference": "HDFCN26285802704-STL-TXNAC7773B2E824-M007",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_ac7773b2e824"
+      ],
+      "amount": "7810.22"
+    },
+    {
+      "bank_row": 111,
+      "reference": "PAYGW SETTL BM00820261009",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_381270118bcd",
+        "txn_8cf33bef8ba4"
+      ],
+      "amount": "3890.32"
+    },
+    {
+      "bank_row": 112,
+      "reference": "PAYGW SETTL BM00820261010",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_f862fa19a022"
+      ],
+      "amount": "480.25"
+    },
+    {
+      "bank_row": 113,
+      "reference": "UTIBN26285782503-STL-TXN31ED1D1DF11E-M012",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_31ed1d1df11e"
+      ],
+      "amount": "3587.84"
+    },
+    {
+      "bank_row": 114,
+      "reference": "PAYGW/4FA59F8F18",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_4fa59f8f1883"
+      ],
+      "amount": "699.66"
+    },
+    {
+      "bank_row": 115,
+      "reference": "HDFCN26285811091-STL-TXNC62858156CB9-M012",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_c62858156cb9"
+      ],
+      "amount": "7810.22"
+    },
+    {
+      "bank_row": 116,
+      "reference": "PAYGW/62A120D9DD",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_62a120d9dd63"
+      ],
+      "amount": "682.50"
+    },
+    {
+      "bank_row": 117,
+      "reference": "NEFT/HDFCN26285175536/PAYGW SETTL txn_b87de2eefdba",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_b87de2eefdba"
+      ],
+      "amount": "649.41"
+    },
+    {
+      "bank_row": 118,
+      "reference": "PAYGW SETTL BM01420261009",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_fdb4cd1bf503"
+      ],
+      "amount": "1128.16"
+    },
+    {
+      "bank_row": 119,
+      "reference": "NEFT/HDFCN26285249669/PAYGW SETTL txn_53b187ed7adb",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_53b187ed7adb"
+      ],
+      "amount": "1277.08"
+    },
+    {
+      "bank_row": 120,
+      "reference": "PAYGW/5E31567889",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_5e315678893e"
+      ],
+      "amount": "978.19"
+    },
+    {
+      "bank_row": 121,
+      "reference": "PAYGW SETTL BM01920261011",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_1df35e29f180"
+      ],
+      "amount": "671.35"
+    },
+    {
+      "bank_row": 122,
+      "reference": "HDFCN26285003737-STL-TXN25D690370668-M020",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_25d690370668"
+      ],
+      "amount": "1268.34"
+    },
+    {
+      "bank_row": 123,
+      "reference": "PAYGW/51444B35C7",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_51444b35c7f3"
+      ],
+      "amount": "682.50"
+    },
+    {
+      "bank_row": 124,
+      "reference": "NEFT/HDFCN26285611305/PAYGW SETTL txn_fc5f68b254a0",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_fc5f68b254a0"
+      ],
+      "amount": "4881.02"
+    },
+    {
+      "bank_row": 125,
+      "reference": "NEFT/HDFCN26285620608/RFND/F87CB407D4",
+      "kind": "refund",
+      "ledger_txn_ids": [
+        "txn_f87cb407d41a"
+      ],
+      "amount": "-185.31"
+    },
+    {
+      "bank_row": 126,
+      "reference": "PAYGW SETTL BM00120261010",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_e13b42aadea3"
+      ],
+      "amount": "1714.63"
+    },
+    {
+      "bank_row": 127,
+      "reference": "NEFT/HDFCN26286855336/PAYGW BATCH B-M001-20261011",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_6f07457f27c9"
+      ],
+      "amount": "696.61"
+    },
+    {
+      "bank_row": 128,
+      "reference": "NEFT/HDFCN26286176900/PAYGW BATCH B-M002-20261012",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_38ad7f6ab33b",
+        "txn_9e0af6c434df",
+        "txn_6a779e4be45d"
+      ],
+      "amount": "2099.00"
+    },
+    {
+      "bank_row": 129,
+      "reference": "HDFCN26286233450-STL-TXN3E4F25E74474-M003",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_3e4f25e74474"
+      ],
+      "amount": "1434.88"
+    },
+    {
+      "bank_row": 130,
+      "reference": "UTIBN26286850829-STL-TXNC51E16DF1DE4-M003",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_c51e16df1de4"
+      ],
+      "amount": "775.90"
+    },
+    {
+      "bank_row": 131,
+      "reference": "HDFCN26286233792-STL-TXN4B963C782FAB-M004",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_4b963c782fab"
+      ],
+      "amount": "243.12"
+    },
+    {
+      "bank_row": 132,
+      "reference": "PAYGW/E806EBDB14",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_e806ebdb14ef"
+      ],
+      "amount": "343.16"
+    },
+    {
+      "bank_row": 133,
+      "reference": "PAYGW SETTL BM00520261009",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_6c091c6c31c7"
+      ],
+      "amount": "559.48"
+    },
+    {
+      "bank_row": 134,
+      "reference": "PAYGW/0546509639",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_054650963922"
+      ],
+      "amount": "1522.90"
+    },
+    {
+      "bank_row": 135,
+      "reference": "PAYGW/2807F81D82",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_2807f81d8261"
+      ],
+      "amount": "2928.22"
+    },
+    {
+      "bank_row": 136,
+      "reference": "UTIBN26286632658-STL-TXN946825FDF016-M007",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_946825fdf016"
+      ],
+      "amount": "1070.34"
+    },
+    {
+      "bank_row": 137,
+      "reference": "NEFT/UTIBN26286546854/PAYGW BATCH B-M008-20261012",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_df8ca785c7b9"
+      ],
+      "amount": "874.54"
+    },
+    {
+      "bank_row": 138,
+      "reference": "UTIBN26286105268-STL-TXN3CF8EE148C67-M010",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_3cf8ee148c67"
+      ],
+      "amount": "1463.62"
+    },
+    {
+      "bank_row": 139,
+      "reference": "PAYGW/4398AACF25",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_4398aacf251f"
+      ],
+      "amount": "243.12"
+    },
+    {
+      "bank_row": 141,
+      "reference": "PAYGW SETTL BM01120261011",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_c3cfca8e146c"
+      ],
+      "amount": "1238.44"
+    },
+    {
+      "bank_row": 142,
+      "reference": "PAYGW SETTL BM01120261012",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_93abb06c0cc5",
+        "txn_db63593a0879",
+        "txn_58059b032e57"
+      ],
+      "amount": "5417.19"
+    },
+    {
+      "bank_row": 143,
+      "reference": "NEFT/UTIBN26286038366/PAYGW BATCH B-M014-20261010",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_d9ef0f499cc7"
+      ],
+      "amount": "412.60"
+    },
+    {
+      "bank_row": 144,
+      "reference": "NEFT/HDFCN26286199091/PAYGW BATCH B-M017-20261009",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_3cd24a9ac29b"
+      ],
+      "amount": "2627.28"
+    },
+    {
+      "bank_row": 145,
+      "reference": "NEFT/UTIBN26286843540/PAYGW BATCH B-M019-20261010",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_13ffc09c2985"
+      ],
+      "amount": "1309.86"
+    },
+    {
+      "bank_row": 146,
+      "reference": "PAYGW SETTL BM00120261013",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_15a2460ff358"
+      ],
+      "amount": "831.10"
+    },
+    {
+      "bank_row": 147,
+      "reference": "PAYGW/8169648252",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_816964825221"
+      ],
+      "amount": "194.30"
+    },
+    {
+      "bank_row": 148,
+      "reference": "NEFT/UTIBN26287335485/PAYGW SETTL txn_401a27dfc9b6",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_401a27dfc9b6"
+      ],
+      "amount": "3027.14"
+    },
+    {
+      "bank_row": 149,
+      "reference": "NEFT/UTIBN26287625260/PAYGW BATCH B-M008-20261013",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_b0d4454330f2",
+        "txn_cfe7525c7b6f"
+      ],
+      "amount": "3027.98"
+    },
+    {
+      "bank_row": 150,
+      "reference": "NEFT/UTIBN26287019527/PAYGW SETTL txn_1894cf7d0ea0",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_1894cf7d0ea0"
+      ],
+      "amount": "600.45"
+    },
+    {
+      "bank_row": 151,
+      "reference": "NEFT/HDFCN26287225001/PAYGW SETTL txn_807056c5e99a",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_807056c5e99a"
+      ],
+      "amount": "1344.55"
+    },
+    {
+      "bank_row": 152,
+      "reference": "NEFT/UTIBN26287045121/PAYGW SETTL txn_81a940169b02",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_81a940169b02"
+      ],
+      "amount": "875.52"
+    },
+    {
+      "bank_row": 153,
+      "reference": "HDFCN26287068289-STL-TXNCD388CB245D7-M010",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_cd388cb245d7"
+      ],
+      "amount": "2337.27"
+    },
+    {
+      "bank_row": 154,
+      "reference": "UTIBN26287593019-STL-TXN3E667CDC8780-M013",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_3e667cdc8780"
+      ],
+      "amount": "487.22"
+    },
+    {
+      "bank_row": 155,
+      "reference": "PAYGW/5DD02D15F8",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_5dd02d15f8de"
+      ],
+      "amount": "445.02"
+    },
+    {
+      "bank_row": 156,
+      "reference": "HDFCN26287008016-STL-TXN9FBA14814031-M016",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_9fba14814031"
+      ],
+      "amount": "749.47"
+    },
+    {
+      "bank_row": 157,
+      "reference": "HDFCN26287377506-STL-TXN11E9D75FA03D-M018",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_11e9d75fa03d"
+      ],
+      "amount": "438.40"
+    },
+    {
+      "bank_row": 158,
+      "reference": "PAYGW/898933C9FE",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_898933c9fe04"
+      ],
+      "amount": "2440.02"
+    },
+    {
+      "bank_row": 159,
+      "reference": "NEFT/HDFCN26287993717/RFND/33B42ED0DD",
+      "kind": "refund",
+      "ledger_txn_ids": [
+        "txn_33b42ed0dd5d"
+      ],
+      "amount": "-2499.00"
+    },
+    {
+      "bank_row": 160,
+      "reference": "NEFT/HDFCN26288508221/PAYGW BATCH B-M002-20261013",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_ca64350a59fb",
+        "txn_1229a23e7fa1",
+        "txn_74ef01c199ff"
+      ],
+      "amount": "2042.56"
+    },
+    {
+      "bank_row": 161,
+      "reference": "PAYGW SETTL BM00220261014",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_ab6696475602",
+        "txn_1c24a0047009",
+        "txn_8e9fe20e1b33"
+      ],
+      "amount": "2897.03"
+    },
+    {
+      "bank_row": 162,
+      "reference": "HDFCN26288340568-STL-TXNC5EE600E3F7E-M003",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_c5ee600e3f7e"
+      ],
+      "amount": "389.58"
+    },
+    {
+      "bank_row": 163,
+      "reference": "PAYGW/DEB95CC9D0",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_deb95cc9d068"
+      ],
+      "amount": "340.76"
+    },
+    {
+      "bank_row": 164,
+      "reference": "NEFT/HDFCN26288877253/PAYGW SETTL txn_e797f8fc66bd",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_e797f8fc66bd"
+      ],
+      "amount": "340.76"
+    },
+    {
+      "bank_row": 165,
+      "reference": "NEFT/UTIBN26288665888/PAYGW SETTL txn_89069a7c8763",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_89069a7c8763"
+      ],
+      "amount": "4177.98"
+    },
+    {
+      "bank_row": 166,
+      "reference": "PAYGW/DBA259571D",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_dba259571d85"
+      ],
+      "amount": "243.12"
+    },
+    {
+      "bank_row": 167,
+      "reference": "NEFT/UTIBN26288059244/PAYGW BATCH B-M011-20261013",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_ac35d2a2c78f"
+      ],
+      "amount": "799.65"
+    },
+    {
+      "bank_row": 168,
+      "reference": "UTIBN26288231176-STL-TXN0A9779FE15C8-M012",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_0a9779fe15c8"
+      ],
+      "amount": "7790.50"
+    },
+    {
+      "bank_row": 169,
+      "reference": "NEFT/UTIBN26288544917/PAYGW SETTL txn_a6352fae494b",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_a6352fae494b"
+      ],
+      "amount": "964.48"
+    },
+    {
+      "bank_row": 170,
+      "reference": "NEFT/UTIBN26288360934/PAYGW BATCH B-M014-20261013",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_a74e953627cf"
+      ],
+      "amount": "3416.42"
+    },
+    {
+      "bank_row": 171,
+      "reference": "HDFCN26288959725-STL-TXN78D210B718F3-M015",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_78d210b718f3"
+      ],
+      "amount": "910.41"
+    },
+    {
+      "bank_row": 172,
+      "reference": "PAYGW/51DE035317",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_51de03531772"
+      ],
+      "amount": "243.12"
+    },
+    {
+      "bank_row": 173,
+      "reference": "NEFT/HDFCN26288105366/PAYGW BATCH B-M017-20261014",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_b705d55a27c4"
+      ],
+      "amount": "757.34"
+    },
+    {
+      "bank_row": 174,
+      "reference": "NEFT/UTIBN26288205649/PAYGW BATCH B-M019-20261014",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_4085ebf599a4",
+        "txn_5f75436cc248"
+      ],
+      "amount": "1369.97"
+    },
+    {
+      "bank_row": 175,
+      "reference": "PAYGW SETTL BM00120261014",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_8726d015322b"
+      ],
+      "amount": "201.12"
+    },
+    {
+      "bank_row": 176,
+      "reference": "PAYGW SETTL BM00120261015",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_b42512ff6196",
+        "txn_018661f266bc",
+        "txn_81ef536abc1c"
+      ],
+      "amount": "4309.42"
+    },
+    {
+      "bank_row": 177,
+      "reference": "PAYGW/742EA84181",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_742ea841819e"
+      ],
+      "amount": "1537.74"
+    },
+    {
+      "bank_row": 178,
+      "reference": "UTIBN26289084481-STL-TXND1891DE44351-M003",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_d1891de44351"
+      ],
+      "amount": "12991.40"
+    },
+    {
+      "bank_row": 179,
+      "reference": "NEFT/UTIBN26289527805/PAYGW SETTL txn_ac982ba947fa",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_ac982ba947fa"
+      ],
+      "amount": "849.47"
+    },
+    {
+      "bank_row": 180,
+      "reference": "NEFT/UTIBN26289737650/PAYGW BATCH B-M005-20261014",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_a2f89f3a750c"
+      ],
+      "amount": "1449.85"
+    },
+    {
+      "bank_row": 181,
+      "reference": "NEFT/HDFCN26289807755/PAYGW BATCH B-M005-20261015",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_e1e78ed13abe",
+        "txn_8183c527460e",
+        "txn_35cc744da8ef"
+      ],
+      "amount": "3270.27"
+    },
+    {
+      "bank_row": 182,
+      "reference": "NEFT/UTIBN26289696357/PAYGW SETTL txn_8f155c5646ce",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_8f155c5646ce"
+      ],
+      "amount": "1126.32"
+    },
+    {
+      "bank_row": 183,
+      "reference": "NEFT/UTIBN26289307354/PAYGW SETTL txn_25f4698bf18c",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_25f4698bf18c"
+      ],
+      "amount": "3416.42"
+    },
+    {
+      "bank_row": 184,
+      "reference": "HDFCN26289697114-STL-TXNCDC221874EAB-M007",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_cdc221874eab"
+      ],
+      "amount": "1630.14"
+    },
+    {
+      "bank_row": 185,
+      "reference": "PAYGW SETTL BM00820261014",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_fa64ad9aebd6"
+      ],
+      "amount": "1028.13"
+    },
+    {
+      "bank_row": 186,
+      "reference": "NEFT/UTIBN26289434600/PAYGW BATCH B-M008-20261015",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_058fc7031ff9"
+      ],
+      "amount": "1426.37"
+    },
+    {
+      "bank_row": 187,
+      "reference": "PAYGW/679619992D",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_679619992dc2"
+      ],
+      "amount": "194.30"
+    },
+    {
+      "bank_row": 189,
+      "reference": "PAYGW/0C733A86D8",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_0c733a86d81f"
+      ],
+      "amount": "340.76"
+    },
+    {
+      "bank_row": 190,
+      "reference": "UTIBN26289696677-STL-TXN1438123A1AA2-M015",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_1438123a1aa2"
+      ],
+      "amount": "2928.22"
+    },
+    {
+      "bank_row": 191,
+      "reference": "HDFCN26289236372-STL-TXNB964DF4D279E-M018",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_b964df4d279e"
+      ],
+      "amount": "409.75"
+    },
+    {
+      "bank_row": 192,
+      "reference": "PAYGW/FD613B1EFB",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_fd613b1efbad"
+      ],
+      "amount": "438.40"
+    },
+    {
+      "bank_row": 193,
+      "reference": "NEFT/UTIBN26289450632/PAYGW BATCH B-M019-20261015",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_21ef8ecda0f6"
+      ],
+      "amount": "4881.02"
+    },
+    {
+      "bank_row": 194,
+      "reference": "NEFT/HDFCN26290872138/PAYGW BATCH B-M002-20261016",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_cdee650c3634",
+        "txn_c21a6553f118"
+      ],
+      "amount": "673.74"
+    },
+    {
+      "bank_row": 195,
+      "reference": "NEFT/UTIBN26290839602/PAYGW SETTL txn_05a694b5539e",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_05a694b5539e"
+      ],
+      "amount": "857.81"
+    },
+    {
+      "bank_row": 196,
+      "reference": "HDFCN26290205318-STL-TXN24016D2A60AD-M006",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_24016d2a60ad"
+      ],
+      "amount": "389.58"
+    },
+    {
+      "bank_row": 197,
+      "reference": "NEFT/UTIBN26290174167/PAYGW SETTL txn_3c7c755b0627",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_3c7c755b0627"
+      ],
+      "amount": "1587.29"
+    },
+    {
+      "bank_row": 198,
+      "reference": "UTIBN26290466756-STL-TXN95686962E3E2-M006",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_95686962e3e2"
+      ],
+      "amount": "979.38"
+    },
+    {
+      "bank_row": 199,
+      "reference": "NEFT/UTIBN26290609238/PAYGW SETTL txn_928db21681b7",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_928db21681b7"
+      ],
+      "amount": "2534.16"
+    },
+    {
+      "bank_row": 200,
+      "reference": "NEFT/UTIBN26290513639/PAYGW BATCH B-M011-20261016",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_a68d55ec7b0b"
+      ],
+      "amount": "877.78"
+    },
+    {
+      "bank_row": 201,
+      "reference": "PAYGW/1A3E3B7564",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_1a3e3b756449"
+      ],
+      "amount": "682.50"
+    },
+    {
+      "bank_row": 202,
+      "reference": "PAYGW SETTL BM01420261015",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_11fc8062289e"
+      ],
+      "amount": "3416.42"
+    },
+    {
+      "bank_row": 203,
+      "reference": "NEFT/UTIBN26290565937/PAYGW SETTL txn_09ca421e3b9d",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_09ca421e3b9d"
+      ],
+      "amount": "5497.72"
+    },
+    {
+      "bank_row": 204,
+      "reference": "NEFT/UTIBN26292221342/PAYGW BATCH B-M001-20261016",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_62b65f87bf03"
+      ],
+      "amount": "1170.70"
+    },
+    {
+      "bank_row": 205,
+      "reference": "PAYGW SETTL BM00120261018",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_fd4e7ab0ec09",
+        "txn_6a167a630d18",
+        "txn_41b872961fe0",
+        "txn_2b230b1f730d"
+      ],
+      "amount": "5238.56"
+    },
+    {
+      "bank_row": 206,
+      "reference": "PAYGW/2AEC7C417D",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_2aec7c417db3"
+      ],
+      "amount": "532.95"
+    },
+    {
+      "bank_row": 207,
+      "reference": "PAYGW/379343EAFA",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_379343eafa24"
+      ],
+      "amount": "1463.62"
+    },
+    {
+      "bank_row": 208,
+      "reference": "PAYGW/C49E9D6CD4",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_c49e9d6cd4a7"
+      ],
+      "amount": "3416.42"
+    },
+    {
+      "bank_row": 209,
+      "reference": "NEFT/UTIBN26292049224/PAYGW SETTL txn_dd365a58bfd0",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_dd365a58bfd0"
+      ],
+      "amount": "780.14"
+    },
+    {
+      "bank_row": 210,
+      "reference": "UTIBN26292791849-STL-TXN72397115DF90-M004",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_72397115df90"
+      ],
+      "amount": "291.94"
+    },
+    {
+      "bank_row": 211,
+      "reference": "HDFCN26292875021-STL-TXND31C49B4B937-M004",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_d31c49b4b937"
+      ],
+      "amount": "291.94"
+    },
+    {
+      "bank_row": 212,
+      "reference": "PAYGW SETTL BM00520261016",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_16b1dcb31810",
+        "txn_54234421ba7b"
+      ],
+      "amount": "666.38"
+    },
+    {
+      "bank_row": 213,
+      "reference": "PAYGW SETTL BM00520261018",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_ccf0c043e944"
+      ],
+      "amount": "1951.82"
+    },
+    {
+      "bank_row": 214,
+      "reference": "NEFT/HDFCN26292738269/PAYGW SETTL txn_0ffab1f90a45",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_0ffab1f90a45"
+      ],
+      "amount": "2928.22"
+    },
+    {
+      "bank_row": 215,
+      "reference": "PAYGW/351648C4DA",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_351648c4daf9"
+      ],
+      "amount": "780.14"
+    },
+    {
+      "bank_row": 216,
+      "reference": "PAYGW/33A63750D8",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_33a63750d801"
+      ],
+      "amount": "4881.02"
+    },
+    {
+      "bank_row": 217,
+      "reference": "PAYGW/98461063BB",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_98461063bb07"
+      ],
+      "amount": "7810.22"
+    },
+    {
+      "bank_row": 218,
+      "reference": "NEFT/UTIBN26292134659/PAYGW BATCH B-M008-20261016",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_e46d0e8a516e"
+      ],
+      "amount": "291.94"
+    },
+    {
+      "bank_row": 219,
+      "reference": "NEFT/HDFCN26292347840/PAYGW BATCH B-M008-20261017",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_6d32a0b68a67"
+      ],
+      "amount": "1756.54"
+    },
+    {
+      "bank_row": 220,
+      "reference": "NEFT/UTIBN26292677801/PAYGW SETTL txn_3f5505c2bdb3",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_3f5505c2bdb3"
+      ],
+      "amount": "4567.90"
+    },
+    {
+      "bank_row": 221,
+      "reference": "NEFT/HDFCN26292025211/PAYGW SETTL txn_95d3be5417f4",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_95d3be5417f4"
+      ],
+      "amount": "2440.02"
+    },
+    {
+      "bank_row": 222,
+      "reference": "NEFT/HDFCN26292626013/PAYGW SETTL txn_6e93a2990b0e",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_6e93a2990b0e"
+      ],
+      "amount": "1756.54"
+    },
+    {
+      "bank_row": 223,
+      "reference": "PAYGW/7419847B1F",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_7419847b1fff"
+      ],
+      "amount": "975.42"
+    },
+    {
+      "bank_row": 224,
+      "reference": "NEFT/HDFCN26292350341/PAYGW SETTL txn_f608a5c82f42",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_f608a5c82f42"
+      ],
+      "amount": "3416.42"
+    },
+    {
+      "bank_row": 226,
+      "reference": "NEFT/HDFCN26292220779/PAYGW BATCH B-M011-20261018",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_051599fac8ae"
+      ],
+      "amount": "1951.82"
+    },
+    {
+      "bank_row": 227,
+      "reference": "PAYGW SETTL BM01720261017",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_978b2511d009"
+      ],
+      "amount": "562.09"
+    },
+    {
+      "bank_row": 228,
+      "reference": "PAYGW/CE9CF10B25",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_ce9cf10b2597"
+      ],
+      "amount": "1675.79"
+    },
+    {
+      "bank_row": 229,
+      "reference": "NEFT/HDFCN26292182874/PAYGW BATCH B-M019-20261018",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_55c8590a2b79"
+      ],
+      "amount": "2630.83"
+    },
+    {
+      "bank_row": 230,
+      "reference": "PAYGW SETTL BM00120261019",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_b2e49a94f8ff",
+        "txn_81dc7d193eed",
+        "txn_515bf994b67c",
+        "txn_a999cb5686ef"
+      ],
+      "amount": "7032.47"
+    },
+    {
+      "bank_row": 231,
+      "reference": "NEFT/HDFCN26294638003/PAYGW BATCH B-M001-20261020",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_76e23d949940"
+      ],
+      "amount": "3661.67"
+    },
+    {
+      "bank_row": 232,
+      "reference": "NEFT/HDFCN26294292904/PAYGW BATCH B-M002-20261018",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_7543f5345584",
+        "txn_53e36e6fac2f",
+        "txn_a71fd17d6894",
+        "txn_c59f706838b8"
+      ],
+      "amount": "2771.82"
+    },
+    {
+      "bank_row": 233,
+      "reference": "PAYGW SETTL BM00220261020",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_784695847401",
+        "txn_17d849dc490e"
+      ],
+      "amount": "2927.24"
+    },
+    {
+      "bank_row": 234,
+      "reference": "UTIBN26294397085-STL-TXN4D86AD7FF280-M003",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_4d86ad7ff280"
+      ],
+      "amount": "340.76"
+    },
+    {
+      "bank_row": 235,
+      "reference": "NEFT/UTIBN26294780704/PAYGW SETTL txn_8bc145345ea2",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_8bc145345ea2"
+      ],
+      "amount": "7296.38"
+    },
+    {
+      "bank_row": 236,
+      "reference": "NEFT/UTIBN26294669087/PAYGW SETTL txn_9d66168e8d05",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_9d66168e8d05"
+      ],
+      "amount": "629.49"
+    },
+    {
+      "bank_row": 237,
+      "reference": "PAYGW/144A60682C",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_144a60682ced"
+      ],
+      "amount": "1587.57"
+    },
+    {
+      "bank_row": 238,
+      "reference": "UTIBN26294265602-STL-TXN2F88AF4D9876-M004",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_2f88af4d9876"
+      ],
+      "amount": "877.78"
+    },
+    {
+      "bank_row": 239,
+      "reference": "PAYGW/771A147D5A",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_771a147d5a38"
+      ],
+      "amount": "1647.62"
+    },
+    {
+      "bank_row": 240,
+      "reference": "PAYGW/8EAFFFF292",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_8eaffff2927a"
+      ],
+      "amount": "2928.22"
+    },
+    {
+      "bank_row": 241,
+      "reference": "PAYGW SETTL BM00520261017",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_5d5b62853b35"
+      ],
+      "amount": "2020.75"
+    },
+    {
+      "bank_row": 242,
+      "reference": "NEFT/UTIBN26294503251/PAYGW BATCH B-M005-20261020",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_c6126056e96f",
+        "txn_fad8ff579c69",
+        "txn_e8501fc9df68"
+      ],
+      "amount": "2913.57"
+    },
+    {
+      "bank_row": 243,
+      "reference": "PAYGW/4F86A63BCC",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_4f86a63bcc24"
+      ],
+      "amount": "3306.73"
+    },
+    {
+      "bank_row": 244,
+      "reference": "NEFT/HDFCN26294219438/PAYGW BATCH B-M008-20261018",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_253f2924d361"
+      ],
+      "amount": "682.50"
+    },
+    {
+      "bank_row": 245,
+      "reference": "PAYGW/3540DBE34B",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_3540dbe34bef"
+      ],
+      "amount": "752.23"
+    },
+    {
+      "bank_row": 246,
+      "reference": "PAYGW SETTL BM01120261019",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_a7f881830d4d"
+      ],
+      "amount": "2748.19"
+    },
+    {
+      "bank_row": 247,
+      "reference": "NEFT/UTIBN26294620811/PAYGW BATCH B-M011-20261020",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_7f4ce3ae19e3"
+      ],
+      "amount": "1594.53"
+    },
+    {
+      "bank_row": 248,
+      "reference": "UTIBN26294128852-STL-TXN04348BD03C93-M013",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_04348bd03c93"
+      ],
+      "amount": "2928.22"
+    },
+    {
+      "bank_row": 249,
+      "reference": "NEFT/UTIBN26294240827/PAYGW SETTL txn_4003ff04ee76",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_4003ff04ee76"
+      ],
+      "amount": "3416.42"
+    },
+    {
+      "bank_row": 250,
+      "reference": "UTIBN26294427871-STL-TXN42BD3217867B-M013",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_42bd3217867b"
+      ],
+      "amount": "194.30"
+    },
+    {
+      "bank_row": 251,
+      "reference": "PAYGW/7271CE9188",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_7271ce9188a8"
+      ],
+      "amount": "355.98"
+    },
+    {
+      "bank_row": 252,
+      "reference": "NEFT/HDFCN26294932951/PAYGW SETTL txn_8746dba78bc8",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_8746dba78bc8"
+      ],
+      "amount": "1469.31"
+    },
+    {
+      "bank_row": 253,
+      "reference": "NEFT/UTIBN26295782252/PAYGW BATCH B-M001-20261021",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_40c5317f0e7b",
+        "txn_340864314802",
+        "txn_1de111cfcaa4"
+      ],
+      "amount": "4248.40"
+    },
+    {
+      "bank_row": 254,
+      "reference": "NEFT/HDFCN26295738314/PAYGW BATCH B-M002-20261019",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_5cdd78234343",
+        "txn_942a00055ce2"
+      ],
+      "amount": "2180.36"
+    },
+    {
+      "bank_row": 255,
+      "reference": "PAYGW/F5D018F134",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_f5d018f13455"
+      ],
+      "amount": "2832.47"
+    },
+    {
+      "bank_row": 256,
+      "reference": "PAYGW/B940CF936F",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_b940cf936fbb"
+      ],
+      "amount": "461.32"
+    },
+    {
+      "bank_row": 257,
+      "reference": "NEFT/UTIBN26295756925/PAYGW SETTL txn_5c80f3a1e9b4",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_5c80f3a1e9b4"
+      ],
+      "amount": "1463.62"
+    },
+    {
+      "bank_row": 258,
+      "reference": "PAYGW/B421D596A0",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_b421d596a02a"
+      ],
+      "amount": "342.49"
+    },
+    {
+      "bank_row": 259,
+      "reference": "NEFT/HDFCN26295084005/PAYGW BATCH B-M008-20261019",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_8aa06bc32cea"
+      ],
+      "amount": "7810.22"
+    },
+    {
+      "bank_row": 260,
+      "reference": "NEFT/HDFCN26295533094/PAYGW SETTL txn_bfaaca85280c",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_bfaaca85280c"
+      ],
+      "amount": "2859.81"
+    },
+    {
+      "bank_row": 261,
+      "reference": "NEFT/HDFCN26295497325/PAYGW SETTL txn_f6dcbef2bf70",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_f6dcbef2bf70"
+      ],
+      "amount": "1787.93"
+    },
+    {
+      "bank_row": 262,
+      "reference": "PAYGW/3F697B8B6D",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_3f697b8b6d46"
+      ],
+      "amount": "1962.35"
+    },
+    {
+      "bank_row": 263,
+      "reference": "PAYGW/887FF59990",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_887ff5999051"
+      ],
+      "amount": "976.86"
+    },
+    {
+      "bank_row": 264,
+      "reference": "NEFT/UTIBN26295505881/PAYGW BATCH B-M011-20261021",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_7be2f2a9091c",
+        "txn_3e772fa59a3e"
+      ],
+      "amount": "1024.85"
+    },
+    {
+      "bank_row": 265,
+      "reference": "HDFCN26295065250-STL-TXN3A97143F27CC-M012",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_3a97143f27cc"
+      ],
+      "amount": "584.86"
+    },
+    {
+      "bank_row": 266,
+      "reference": "NEFT/HDFCN26295902304/PAYGW SETTL txn_a41b21fb4df3",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_a41b21fb4df3"
+      ],
+      "amount": "780.14"
+    },
+    {
+      "bank_row": 267,
+      "reference": "PAYGW/BACDF3D304",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_bacdf3d304a6"
+      ],
+      "amount": "169.81"
+    },
+    {
+      "bank_row": 268,
+      "reference": "UTIBN26295252018-STL-TXNDFEF6D12AA15-M018",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_dfef6d12aa15"
+      ],
+      "amount": "291.94"
+    },
+    {
+      "bank_row": 269,
+      "reference": "NEFT/HDFCN26295797083/PAYGW BATCH B-M019-20261019",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_fe724389df2c",
+        "txn_ff4c8c7f2a26"
+      ],
+      "amount": "10250.24"
+    },
+    {
+      "bank_row": 270,
+      "reference": "PAYGW/75C2F35FF2",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_75c2f35ff2d8"
+      ],
+      "amount": "489.76"
+    },
+    {
+      "bank_row": 271,
+      "reference": "PAYGW/1FB5F42976",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_1fb5f429766a"
+      ],
+      "amount": "1162.29"
+    },
+    {
+      "bank_row": 272,
+      "reference": "NEFT/HDFCN26296040186/PAYGW BATCH B-M005-20261022",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_e2448532a661",
+        "txn_af01689834b6"
+      ],
+      "amount": "8035.26"
+    },
+    {
+      "bank_row": 273,
+      "reference": "NEFT/HDFCN26296660736/PAYGW SETTL txn_14543fb02cbb",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_14543fb02cbb"
+      ],
+      "amount": "780.14"
+    },
+    {
+      "bank_row": 274,
+      "reference": "PAYGW SETTL BM00820261022",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_ca6ffe0e8f0e",
+        "txn_12ed610399f5"
+      ],
+      "amount": "3317.80"
+    },
+    {
+      "bank_row": 275,
+      "reference": "PAYGW SETTL BM01120261022",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_75feb819bf13",
+        "txn_fec14e437f36"
+      ],
+      "amount": "1016.18"
+    },
+    {
+      "bank_row": 276,
+      "reference": "NEFT/HDFCN26296941694/PAYGW SETTL txn_4361eb13eb7b",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_4361eb13eb7b"
+      ],
+      "amount": "1007.68"
+    },
+    {
+      "bank_row": 277,
+      "reference": "HDFCN26296578793-STL-TXNA507E323C96C-M016",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_a507e323c96c"
+      ],
+      "amount": "602.45"
+    },
+    {
+      "bank_row": 278,
+      "reference": "PAYGW/E323410DE8",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_e323410de86f"
+      ],
+      "amount": "1038.25"
+    },
+    {
+      "bank_row": 279,
+      "reference": "NEFT/UTIBN26296116086/PAYGW BATCH B-M019-20261021",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_c8a9b0209699"
+      ],
+      "amount": "1593.28"
+    },
+    {
+      "bank_row": 280,
+      "reference": "PAYGW SETTL BM00120261024",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_bbc65dc14f79"
+      ],
+      "amount": "340.76"
+    },
+    {
+      "bank_row": 281,
+      "reference": "PAYGW SETTL BM00120261025",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_898c646fe109",
+        "txn_d9b51142c125",
+        "txn_ce595e8b58e9"
+      ],
+      "amount": "2846.83"
+    },
+    {
+      "bank_row": 282,
+      "reference": "NEFT/HDFCN26299786348/PAYGW BATCH B-M002-20261022",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_44138f66ae40"
+      ],
+      "amount": "1951.82"
+    },
+    {
+      "bank_row": 283,
+      "reference": "PAYGW SETTL BM00220261023",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_dee7b706c8e5",
+        "txn_438a2e961add",
+        "txn_d59c15c9bd3b",
+        "txn_da0ad507cf4b"
+      ],
+      "amount": "6689.56"
+    },
+    {
+      "bank_row": 284,
+      "reference": "PAYGW SETTL BM00220261024",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_a98bc9a12d35",
+        "txn_3fc74decde2f",
+        "txn_b37299b7dcba",
+        "txn_983f6684e1bc"
+      ],
+      "amount": "4018.23"
+    },
+    {
+      "bank_row": 285,
+      "reference": "NEFT/HDFCN26299925344/PAYGW BATCH B-M002-20261025",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_64e9a1478ab4"
+      ],
+      "amount": "4881.02"
+    },
+    {
+      "bank_row": 286,
+      "reference": "PAYGW/3053A5DE67",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_3053a5de6723"
+      ],
+      "amount": "780.14"
+    },
+    {
+      "bank_row": 287,
+      "reference": "NEFT/UTIBN26299243412/PAYGW SETTL txn_37c9bd27a4cc",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_37c9bd27a4cc"
+      ],
+      "amount": "2107.19"
+    },
+    {
+      "bank_row": 288,
+      "reference": "UTIBN26299435705-STL-TXN77FC377FA284-M003",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_77fc377fa284"
+      ],
+      "amount": "516.87"
+    },
+    {
+      "bank_row": 289,
+      "reference": "NEFT/UTIBN26299689165/PAYGW SETTL txn_b3d13796fa02",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_b3d13796fa02"
+      ],
+      "amount": "771.98"
+    },
+    {
+      "bank_row": 290,
+      "reference": "NEFT/UTIBN26299528557/PAYGW SETTL txn_11e355e7a654",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_11e355e7a654"
+      ],
+      "amount": "1170.70"
+    },
+    {
+      "bank_row": 291,
+      "reference": "PAYGW/2A6E91F4B8",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_2a6e91f4b870"
+      ],
+      "amount": "1463.62"
+    },
+    {
+      "bank_row": 292,
+      "reference": "NEFT/HDFCN26299859617/PAYGW SETTL txn_1ba04a330499",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_1ba04a330499"
+      ],
+      "amount": "330.46"
+    },
+    {
+      "bank_row": 293,
+      "reference": "PAYGW/977513630C",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_977513630cf9"
+      ],
+      "amount": "779.37"
+    },
+    {
+      "bank_row": 294,
+      "reference": "HDFCN26299401971-STL-TXNB488BA3CA7CB-M007",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_b488ba3ca7cb"
+      ],
+      "amount": "3916.71"
+    },
+    {
+      "bank_row": 295,
+      "reference": "NEFT/UTIBN26299287982/PAYGW SETTL txn_e0b91db6cfda",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_e0b91db6cfda"
+      ],
+      "amount": "605.39"
+    },
+    {
+      "bank_row": 296,
+      "reference": "NEFT/UTIBN26299275626/PAYGW BATCH B-M011-20261025",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_b9e15825bf7d",
+        "txn_436c743627bf",
+        "txn_3e1541c11e17"
+      ],
+      "amount": "2677.89"
+    },
+    {
+      "bank_row": 297,
+      "reference": "UTIBN26299336979-STL-TXNC64DBE383FCB-M012",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_c64dbe383fcb"
+      ],
+      "amount": "447.74"
+    },
+    {
+      "bank_row": 298,
+      "reference": "PAYGW/27AB7A6F37",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_27ab7a6f3784"
+      ],
+      "amount": "1815.77"
+    },
+    {
+      "bank_row": 299,
+      "reference": "NEFT/UTIBN26299881165/PAYGW SETTL txn_20783c8ed33e",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_20783c8ed33e"
+      ],
+      "amount": "243.12"
+    },
+    {
+      "bank_row": 300,
+      "reference": "UTIBN26299237204-STL-TXNA249E43D4580-M016",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_a249e43d4580"
+      ],
+      "amount": "1016.54"
+    },
+    {
+      "bank_row": 301,
+      "reference": "NEFT/HDFCN26299275794/PAYGW SETTL txn_1c1e954d052d",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_1c1e954d052d"
+      ],
+      "amount": "2928.22"
+    },
+    {
+      "bank_row": 302,
+      "reference": "NEFT/HDFCN26299487367/PAYGW BATCH B-M019-20261023",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_7b4d5ca8d8c9"
+      ],
+      "amount": "4881.02"
+    },
+    {
+      "bank_row": 303,
+      "reference": "HDFCN26299935843-STL-TXNFDB5284E46EA-M020",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_fdb5284e46ea"
+      ],
+      "amount": "2275.28"
+    },
+    {
+      "bank_row": 304,
+      "reference": "PAYGW SETTL BM00120261023",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_4520a732d115",
+        "txn_9e13faee550e",
+        "txn_519067a877ed"
+      ],
+      "amount": "6943.16"
+    },
+    {
+      "bank_row": 305,
+      "reference": "PAYGW SETTL BM00120261026",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_fd03dfee673b"
+      ],
+      "amount": "1756.54"
+    },
+    {
+      "bank_row": 306,
+      "reference": "PAYGW SETTL BM00220261026",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_3510fe8612b8",
+        "txn_bee144b9ae30"
+      ],
+      "amount": "1469.59"
+    },
+    {
+      "bank_row": 307,
+      "reference": "NEFT/HDFCN26300064150/PAYGW SETTL txn_2da3340d560a",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_2da3340d560a"
+      ],
+      "amount": "2440.02"
+    },
+    {
+      "bank_row": 308,
+      "reference": "PAYGW/321BBE4BC7",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_321bbe4bc78b"
+      ],
+      "amount": "780.14"
+    },
+    {
+      "bank_row": 309,
+      "reference": "PAYGW/53844DA3E9",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_53844da3e941"
+      ],
+      "amount": "1268.34"
+    },
+    {
+      "bank_row": 310,
+      "reference": "NEFT/UTIBN26300311222/PAYGW SETTL txn_d625fc22a4d4",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_d625fc22a4d4"
+      ],
+      "amount": "1756.54"
+    },
+    {
+      "bank_row": 311,
+      "reference": "HDFCN26300428011-STL-TXN1B9F28959AD6-M004",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_1b9f28959ad6"
+      ],
+      "amount": "666.89"
+    },
+    {
+      "bank_row": 312,
+      "reference": "NEFT/UTIBN26300838550/PAYGW BATCH B-M005-20261024",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_e13761309a0e",
+        "txn_cd271b8c09e5",
+        "txn_2010d85798f5"
+      ],
+      "amount": "5621.96"
+    },
+    {
+      "bank_row": 313,
+      "reference": "NEFT/UTIBN26300053987/PAYGW SETTL txn_06dd5861bfa7",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_06dd5861bfa7"
+      ],
+      "amount": "1214.20"
+    },
+    {
+      "bank_row": 314,
+      "reference": "HDFCN26300327748-STL-TXN2845CF66F94B-M006",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_2845cf66f94b"
+      ],
+      "amount": "3075.45"
+    },
+    {
+      "bank_row": 315,
+      "reference": "HDFCN26300045937-STL-TXN5910B1318603-M007",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_5910b1318603"
+      ],
+      "amount": "733.06"
+    },
+    {
+      "bank_row": 316,
+      "reference": "HDFCN26300468927-STL-TXNC251061B3625-M007",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_c251061b3625"
+      ],
+      "amount": "975.42"
+    },
+    {
+      "bank_row": 317,
+      "reference": "NEFT/UTIBN26300237277/PAYGW BATCH B-M008-20261025",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_b9d69fe8e947",
+        "txn_173942eb4a37"
+      ],
+      "amount": "1292.88"
+    },
+    {
+      "bank_row": 318,
+      "reference": "NEFT/HDFCN26300967505/PAYGW BATCH B-M008-20261026",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_9016a806daab",
+        "txn_2b13e2eaf0a1"
+      ],
+      "amount": "5245.68"
+    },
+    {
+      "bank_row": 319,
+      "reference": "UTIBN26300159439-STL-TXNF3A773D45F79-M009",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_f3a773d45f79"
+      ],
+      "amount": "1068.52"
+    },
+    {
+      "bank_row": 321,
+      "reference": "NEFT/HDFCN26300797375/PAYGW BATCH B-M011-20261026",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_886ec6c2653d",
+        "txn_ac77e4fc0e36",
+        "txn_c6763b08e538"
+      ],
+      "amount": "2961.78"
+    },
+    {
+      "bank_row": 322,
+      "reference": "PAYGW/0D371CC5DF",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_0d371cc5dff8"
+      ],
+      "amount": "1523.71"
+    },
+    {
+      "bank_row": 323,
+      "reference": "HDFCN26300046998-STL-TXNC10179710DC9-M013",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_c10179710dc9"
+      ],
+      "amount": "1304.31"
+    },
+    {
+      "bank_row": 324,
+      "reference": "NEFT/HDFCN26300732719/PAYGW SETTL txn_c47d0bf1d348",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_c47d0bf1d348"
+      ],
+      "amount": "918.42"
+    },
+    {
+      "bank_row": 325,
+      "reference": "PAYGW SETTL BM01420261025",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_14d14408f895"
+      ],
+      "amount": "1951.82"
+    },
+    {
+      "bank_row": 326,
+      "reference": "PAYGW SETTL BM01420261026",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_8f51227e4cde"
+      ],
+      "amount": "112.55"
+    },
+    {
+      "bank_row": 327,
+      "reference": "NEFT/UTIBN26300982963/PAYGW SETTL txn_bf05bac8ebd9",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_bf05bac8ebd9"
+      ],
+      "amount": "972.47"
+    },
+    {
+      "bank_row": 328,
+      "reference": "NEFT/UTIBN26300568966/PAYGW BATCH B-M017-20261026",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_4514a655211c"
+      ],
+      "amount": "7810.22"
+    },
+    {
+      "bank_row": 329,
+      "reference": "PAYGW SETTL BM01920261025",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_c21f3bef03ba",
+        "txn_da476209097e"
+      ],
+      "amount": "2653.76"
+    },
+    {
+      "bank_row": 330,
+      "reference": "NEFT/UTIBN26300300707/PAYGW BATCH B-M019-20261026",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_cf2f26a71212"
+      ],
+      "amount": "291.94"
+    },
+    {
+      "bank_row": 331,
+      "reference": "PAYGW/A677C7746F",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_a677c7746f14"
+      ],
+      "amount": "546.17"
+    },
+    {
+      "bank_row": 332,
+      "reference": "PAYGW SETTL BM00120261027",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_dfd79c37b23b",
+        "txn_b23fa35d74f4"
+      ],
+      "amount": "2912.24"
+    },
+    {
+      "bank_row": 333,
+      "reference": "PAYGW/797B5D3550",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_797b5d3550e9"
+      ],
+      "amount": "3173.80"
+    },
+    {
+      "bank_row": 334,
+      "reference": "NEFT/UTIBN26301497100/PAYGW SETTL txn_f29c07c4fced",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_f29c07c4fced"
+      ],
+      "amount": "851.56"
+    },
+    {
+      "bank_row": 335,
+      "reference": "NEFT/HDFCN26301731792/PAYGW SETTL txn_5a3f51758d40",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_5a3f51758d40"
+      ],
+      "amount": "7810.22"
+    },
+    {
+      "bank_row": 336,
+      "reference": "PAYGW/97CB1FB541",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_97cb1fb541ab"
+      ],
+      "amount": "1894.44"
+    },
+    {
+      "bank_row": 337,
+      "reference": "UTIBN26301212080-STL-TXNE5E28E935595-M004",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_e5e28e935595"
+      ],
+      "amount": "298.81"
+    },
+    {
+      "bank_row": 338,
+      "reference": "UTIBN26301140600-STL-TXN7F4603557FA2-M007",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_7f4603557fa2"
+      ],
+      "amount": "300.75"
+    },
+    {
+      "bank_row": 339,
+      "reference": "NEFT/HDFCN26301579617/PAYGW SETTL txn_737f850fa2ce",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_737f850fa2ce"
+      ],
+      "amount": "1170.70"
+    },
+    {
+      "bank_row": 340,
+      "reference": "NEFT/HDFCN26301836947/PAYGW SETTL txn_85376d04c937",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_85376d04c937"
+      ],
+      "amount": "1079.64"
+    },
+    {
+      "bank_row": 341,
+      "reference": "NEFT/HDFCN26301458958/PAYGW SETTL txn_46f7951317e8",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_46f7951317e8"
+      ],
+      "amount": "389.58"
+    },
+    {
+      "bank_row": 342,
+      "reference": "PAYGW/88A49B26BB",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_88a49b26bb9b"
+      ],
+      "amount": "6687.82"
+    },
+    {
+      "bank_row": 343,
+      "reference": "UTIBN26301621851-STL-TXNF47534F3A560-M020",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_f47534f3a560"
+      ],
+      "amount": "1951.82"
+    },
+    {
+      "bank_row": 344,
+      "reference": "NEFT/HDFCN26302767284/PAYGW BATCH B-M002-20261027",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_8cadecd9ecd9",
+        "txn_be07e7cda313"
+      ],
+      "amount": "2808.30"
+    },
+    {
+      "bank_row": 345,
+      "reference": "PAYGW/C539238646",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_c5392386464b"
+      ],
+      "amount": "438.40"
+    },
+    {
+      "bank_row": 346,
+      "reference": "PAYGW/D3957980D6",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_d3957980d696"
+      ],
+      "amount": "487.22"
+    },
+    {
+      "bank_row": 347,
+      "reference": "PAYGW SETTL BM01120261027",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_edac7e847e49"
+      ],
+      "amount": "329.42"
+    },
+    {
+      "bank_row": 348,
+      "reference": "NEFT/HDFCN26302596910/PAYGW BATCH B-M011-20261028",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_c080295edcb7"
+      ],
+      "amount": "522.56"
+    },
+    {
+      "bank_row": 349,
+      "reference": "PAYGW SETTL BM01420261028",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_f9363eb69864"
+      ],
+      "amount": "824.44"
+    },
+    {
+      "bank_row": 350,
+      "reference": "PAYGW SETTL BM00120261028",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_e0f6d2c2373b"
+      ],
+      "amount": "933.38"
+    },
+    {
+      "bank_row": 351,
+      "reference": "PAYGW SETTL BM00220261029",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_ed69a16f210a",
+        "txn_7cad87a901c7"
+      ],
+      "amount": "8505.11"
+    },
+    {
+      "bank_row": 352,
+      "reference": "HDFCN26303063821-STL-TXN88CD5D8A86F8-M003",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_88cd5d8a86f8"
+      ],
+      "amount": "734.25"
+    },
+    {
+      "bank_row": 353,
+      "reference": "NEFT/HDFCN26303106209/PAYGW BATCH B-M005-20261028",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_45bee1b7955d"
+      ],
+      "amount": "402.38"
+    },
+    {
+      "bank_row": 354,
+      "reference": "NEFT/HDFCN26303095724/PAYGW BATCH B-M005-20261029",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_897194802e47"
+      ],
+      "amount": "4881.02"
+    },
+    {
+      "bank_row": 355,
+      "reference": "PAYGW/0CBEDB85DA",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_0cbedb85da5d"
+      ],
+      "amount": "3448.54"
+    },
+    {
+      "bank_row": 356,
+      "reference": "PAYGW/E64704A327",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_e64704a32712"
+      ],
+      "amount": "1436.24"
+    },
+    {
+      "bank_row": 357,
+      "reference": "PAYGW SETTL BM00820261028",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_45efd2903fee"
+      ],
+      "amount": "243.12"
+    },
+    {
+      "bank_row": 358,
+      "reference": "NEFT/UTIBN26303873708/PAYGW BATCH B-M008-20261029",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_fd2ee12acc4f"
+      ],
+      "amount": "277.95"
+    },
+    {
+      "bank_row": 359,
+      "reference": "HDFCN26303952850-STL-TXNCD1A17226908-M009",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_cd1a17226908"
+      ],
+      "amount": "428.86"
+    },
+    {
+      "bank_row": 360,
+      "reference": "PAYGW/33842C0DA1",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_33842c0da11a"
+      ],
+      "amount": "340.76"
+    },
+    {
+      "bank_row": 361,
+      "reference": "NEFT/UTIBN26303923475/PAYGW SETTL txn_b3845a033224",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_b3845a033224"
+      ],
+      "amount": "915.75"
+    },
+    {
+      "bank_row": 362,
+      "reference": "UTIBN26303390372-STL-TXN070909D7DBCD-M013",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_070909d7dbcd"
+      ],
+      "amount": "1098.35"
+    },
+    {
+      "bank_row": 363,
+      "reference": "NEFT/UTIBN26303423756/PAYGW BATCH B-M014-20261029",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_af3ae644e781"
+      ],
+      "amount": "721.60"
+    },
+    {
+      "bank_row": 364,
+      "reference": "NEFT/HDFCN26303238723/PAYGW BATCH B-M017-20261029",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_6c67dc95201e"
+      ],
+      "amount": "431.04"
+    },
+    {
+      "bank_row": 365,
+      "reference": "PAYGW SETTL BM01920261028",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_6c670abd5d71",
+        "txn_d41a6112214f",
+        "txn_3dfb570a76bd"
+      ],
+      "amount": "2451.22"
+    },
+    {
+      "bank_row": 366,
+      "reference": "PAYGW/B4E5916315",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_b4e591631594"
+      ],
+      "amount": "2499.64"
+    },
+    {
+      "bank_row": 367,
+      "reference": "NEFT/UTIBN26304813481/PAYGW BATCH B-M008-20261030",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_7a3116b3d378"
+      ],
+      "amount": "1934.97"
+    },
+    {
+      "bank_row": 368,
+      "reference": "PAYGW/8C855B0953",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_8c855b095310"
+      ],
+      "amount": "438.40"
+    },
+    {
+      "bank_row": 369,
+      "reference": "HDFCN26304186160-STL-TXN8D5EFBC8AC7D-M010",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_8d5efbc8ac7d"
+      ],
+      "amount": "1895.08"
+    },
+    {
+      "bank_row": 370,
+      "reference": "PAYGW SETTL BM01120261029",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_a499aaa74fc8"
+      ],
+      "amount": "975.42"
+    },
+    {
+      "bank_row": 371,
+      "reference": "PAYGW SETTL BM01120261030",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_28e53cb1f870"
+      ],
+      "amount": "1993.41"
+    },
+    {
+      "bank_row": 372,
+      "reference": "NEFT/HDFCN26304465217/PAYGW SETTL txn_1f423f35997c",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_1f423f35997c"
+      ],
+      "amount": "3738.65"
+    },
+    {
+      "bank_row": 373,
+      "reference": "NEFT/UTIBN26304863661/PAYGW SETTL txn_40a0e168aed8",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_40a0e168aed8"
+      ],
+      "amount": "1696.90"
+    },
+    {
+      "bank_row": 374,
+      "reference": "UTIBN26304402079-STL-TXNA85D204BDBE3-M012",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_a85d204bdbe3"
+      ],
+      "amount": "1463.62"
+    },
+    {
+      "bank_row": 375,
+      "reference": "NEFT/HDFCN26304082055/PAYGW SETTL txn_fbfdc1460ae3",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_fbfdc1460ae3"
+      ],
+      "amount": "945.65"
+    },
+    {
+      "bank_row": 376,
+      "reference": "NEFT/UTIBN26304024226/PAYGW BATCH B-M014-20261030",
+      "kind": "batch",
+      "ledger_txn_ids": [
+        "txn_fac5d9f326ce",
+        "txn_51ce7a10ecb1"
+      ],
+      "amount": "2062.17"
+    },
+    {
+      "bank_row": 377,
+      "reference": "PAYGW/DEED3BE756",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_deed3be75694"
+      ],
+      "amount": "1318.96"
+    },
+    {
+      "bank_row": 378,
+      "reference": "UTIBN26304736576-STL-TXN4CA45CA6CED6-M016",
+      "kind": "one_to_one",
+      "ledger_txn_ids": [
+        "txn_4ca45ca6ced6"
+      ],
+      "amount": "578.19"
+    }
+  ],
+  "expected_ledger_bucket": {
+    "txn_001cc26124b2": "matched",
+    "txn_00757a8b3fd5": "timing_difference",
+    "txn_009fac441c88": "matched",
+    "txn_018661f266bc": "matched",
+    "txn_0427784131b0": "rounding_variance",
+    "txn_04348bd03c93": "matched",
+    "txn_051599fac8ae": "matched",
+    "txn_053ebd25ca39": "matched",
+    "txn_054650963922": "matched",
+    "txn_058fc7031ff9": "matched",
+    "txn_05a694b5539e": "matched",
+    "txn_06dd5861bfa7": "matched",
+    "txn_070909d7dbcd": "matched",
+    "txn_07ec83e18d37": "matched",
+    "txn_08ff033b17a3": "matched",
+    "txn_09ca421e3b9d": "matched",
+    "txn_0a9779fe15c8": "matched",
+    "txn_0c733a86d81f": "matched",
+    "txn_0c973707f6a6": "matched",
+    "txn_0cbedb85da5d": "matched",
+    "txn_0d371cc5dff8": "matched",
+    "txn_0d4f1416490f": "matched",
+    "txn_0d5aeaf468ae": "matched",
+    "txn_0d680e661091": "matched",
+    "txn_0e6a5c7dda00": "matched",
+    "txn_0f72a53fec17": "matched",
+    "txn_0ffab1f90a45": "matched",
+    "txn_1134a5d29a98": "matched",
+    "txn_117a0e821f60": "matched",
+    "txn_11e355e7a654": "matched",
+    "txn_11e9d75fa03d": "matched",
+    "txn_11fc8062289e": "matched",
+    "txn_1229a23e7fa1": "matched",
+    "txn_128dc25927e2": "matched",
+    "txn_12ed610399f5": "matched",
+    "txn_132b1db8c905": "matched",
+    "txn_13ffc09c2985": "matched",
+    "txn_1438123a1aa2": "matched",
+    "txn_144a60682ced": "matched",
+    "txn_14543fb02cbb": "matched",
+    "txn_147f58673747": "matched",
+    "txn_148ad24123fb": "rounding_variance",
+    "txn_14d14408f895": "matched",
+    "txn_15a2460ff358": "matched",
+    "txn_1667391d58ea": "matched",
+    "txn_167608c8f5f4": "matched",
+    "txn_169c8719229a": "matched",
+    "txn_16b1dcb31810": "matched",
+    "txn_171a5d4b52b9": "matched",
+    "txn_173942eb4a37": "matched",
+    "txn_174af2d59857": "matched",
+    "txn_17d849dc490e": "matched",
+    "txn_1894cf7d0ea0": "matched",
+    "txn_1a3e3b756449": "matched",
+    "txn_1b9f28959ad6": "matched",
+    "txn_1ba04a330499": "matched",
+    "txn_1c1e954d052d": "matched",
+    "txn_1c24a0047009": "matched",
+    "txn_1de111cfcaa4": "matched",
+    "txn_1df35e29f180": "matched",
+    "txn_1e1fc5cb13fb": "matched",
+    "txn_1f423f35997c": "matched",
+    "txn_1fb5f429766a": "matched",
+    "txn_2010d85798f5": "matched",
+    "txn_20783c8ed33e": "matched",
+    "txn_20be532d0b20": "matched",
+    "txn_21a70264de36": "matched",
+    "txn_21ef8ecda0f6": "matched",
+    "txn_24016d2a60ad": "matched",
+    "txn_240774ad4a02": "timing_difference",
+    "txn_253f2924d361": "matched",
+    "txn_255d0bc7cbd7": "matched",
+    "txn_25bfeafbbbf2": "matched",
+    "txn_25d690370668": "matched",
+    "txn_25f4698bf18c": "matched",
+    "txn_273275cfb252": "matched",
+    "txn_2742e37f4f74": "timing_difference",
+    "txn_27ab7a6f3784": "matched",
+    "txn_2807f81d8261": "matched",
+    "txn_2845cf66f94b": "matched",
+    "txn_28e53cb1f870": "matched",
+    "txn_2a6e91f4b870": "matched",
+    "txn_2aa5d416fd46": "matched",
+    "txn_2aec7c417db3": "matched",
+    "txn_2b13e2eaf0a1": "matched",
+    "txn_2b230b1f730d": "matched",
+    "txn_2da3340d560a": "matched",
+    "txn_2e072402ed45": "matched",
+    "txn_2e822c0b4c9c": "matched",
+    "txn_2f88af4d9876": "matched",
+    "txn_302fe02a9cb8": "matched",
+    "txn_3053a5de6723": "matched",
+    "txn_31de0a878bc2": "timing_difference",
+    "txn_31ed1d1df11e": "matched",
+    "txn_321bbe4bc78b": "matched",
+    "txn_327c6ffd62a2": "matched",
+    "txn_3294d2c6282a": "matched",
+    "txn_33842c0da11a": "matched",
+    "txn_33a63750d801": "matched",
+    "txn_33b42ed0dd5d": "matched",
+    "txn_33fb84b410f4": "matched",
+    "txn_340864314802": "matched",
+    "txn_346381223db4": "matched",
+    "txn_349fc4b81d74": "rounding_variance",
+    "txn_3510fe8612b8": "matched",
+    "txn_351648c4daf9": "matched",
+    "txn_3540dbe34bef": "matched",
+    "txn_35cc744da8ef": "matched",
+    "txn_35feae698e58": "rounding_variance",
+    "txn_36bc05aa9584": "rounding_variance",
+    "txn_37072262211c": "matched",
+    "txn_379343eafa24": "matched",
+    "txn_379761a49e0c": "timing_difference",
+    "txn_37c3c28fe75a": "matched",
+    "txn_37c9bd27a4cc": "matched",
+    "txn_37cd868fa0e9": "matched",
+    "txn_381270118bcd": "matched",
+    "txn_38638860e1e7": "matched",
+    "txn_38ad7f6ab33b": "matched",
+    "txn_3a97143f27cc": "matched",
+    "txn_3c7c755b0627": "matched",
+    "txn_3cd24a9ac29b": "matched",
+    "txn_3cf8ee148c67": "matched",
+    "txn_3d139f03ffe4": "matched",
+    "txn_3d209c71e00e": "matched",
+    "txn_3dfb570a76bd": "matched",
+    "txn_3e1541c11e17": "matched",
+    "txn_3e3a5a095516": "matched",
+    "txn_3e4f25e74474": "matched",
+    "txn_3e667cdc8780": "matched",
+    "txn_3e772fa59a3e": "matched",
+    "txn_3f5505c2bdb3": "matched",
+    "txn_3f697b8b6d46": "matched",
+    "txn_3fc74decde2f": "matched",
+    "txn_4003ff04ee76": "matched",
+    "txn_401a27dfc9b6": "matched",
+    "txn_4085ebf599a4": "matched",
+    "txn_40a0e168aed8": "matched",
+    "txn_40c5317f0e7b": "matched",
+    "txn_41b872961fe0": "matched",
+    "txn_42793710fae2": "rounding_variance",
+    "txn_42bd3217867b": "matched",
+    "txn_4361eb13eb7b": "matched",
+    "txn_436c743627bf": "matched",
+    "txn_438a2e961add": "matched",
+    "txn_4391fea28e48": "rounding_variance",
+    "txn_4398aacf251f": "matched",
+    "txn_44138f66ae40": "matched",
+    "txn_4464b859ca76": "matched",
+    "txn_4469df82dd06": "rounding_variance",
+    "txn_450faf24e3d5": "timing_difference",
+    "txn_4514a655211c": "matched",
+    "txn_4520a732d115": "matched",
+    "txn_456e2c2640d8": "matched",
+    "txn_45bee1b7955d": "matched",
+    "txn_45efd2903fee": "matched",
+    "txn_46e6f6d3ba65": "matched",
+    "txn_46f7951317e8": "matched",
+    "txn_48cc9698d115": "matched",
+    "txn_48e5106f8123": "matched",
+    "txn_4a456a19d8c5": "matched",
+    "txn_4a7f28eb7664": "matched",
+    "txn_4b963c782fab": "matched",
+    "txn_4ca45ca6ced6": "matched",
+    "txn_4d2771b035ef": "matched",
+    "txn_4d86ad7ff280": "matched",
+    "txn_4e108673e847": "rounding_variance",
+    "txn_4e42ba9e2f3e": "timing_difference",
+    "txn_4e755cff8d33": "matched",
+    "txn_4f7e403dcafc": "rounding_variance",
+    "txn_4f86a63bcc24": "matched",
+    "txn_4fa59f8f1883": "matched",
+    "txn_5101993afac9": "matched",
+    "txn_51444b35c7f3": "matched",
+    "txn_515bf994b67c": "matched",
+    "txn_517dbabac59e": "matched",
+    "txn_519067a877ed": "matched",
+    "txn_51ce7a10ecb1": "matched",
+    "txn_51de03531772": "matched",
+    "txn_51edcabc1419": "matched",
+    "txn_53844da3e941": "matched",
+    "txn_53b187ed7adb": "matched",
+    "txn_53e36e6fac2f": "matched",
+    "txn_54234421ba7b": "matched",
+    "txn_55c8590a2b79": "matched",
+    "txn_5687c80f0eb0": "rounding_variance",
+    "txn_573c71150e12": "matched",
+    "txn_58059b032e57": "matched",
+    "txn_5910b1318603": "matched",
+    "txn_5a3f51758d40": "matched",
+    "txn_5b209ac7d9e1": "matched",
+    "txn_5c80f3a1e9b4": "matched",
+    "txn_5cdd78234343": "matched",
+    "txn_5d5b62853b35": "matched",
+    "txn_5dd02d15f8de": "matched",
+    "txn_5e315678893e": "matched",
+    "txn_5ed2bec32dce": "rounding_variance",
+    "txn_5eea80027877": "matched",
+    "txn_5f75436cc248": "matched",
+    "txn_5ff9d358bbe7": "matched",
+    "txn_61b8dac96d70": "matched",
+    "txn_62a120d9dd63": "matched",
+    "txn_62b65f87bf03": "matched",
+    "txn_635b3a57d6e0": "matched",
+    "txn_639edf4521a8": "matched",
+    "txn_64b954de3eba": "matched",
+    "txn_64e9a1478ab4": "matched",
+    "txn_679619992dc2": "matched",
+    "txn_69483bfd744e": "matched",
+    "txn_695f0748e6db": "timing_difference",
+    "txn_6a167a630d18": "matched",
+    "txn_6a779e4be45d": "matched",
+    "txn_6aa8d09c37ce": "matched",
+    "txn_6c091c6c31c7": "matched",
+    "txn_6c670abd5d71": "matched",
+    "txn_6c67dc95201e": "matched",
+    "txn_6cc84952ab79": "matched",
+    "txn_6d32a0b68a67": "matched",
+    "txn_6e93a2990b0e": "matched",
+    "txn_6ea421e82414": "matched",
+    "txn_6f07457f27c9": "matched",
+    "txn_6fe1c8591b6b": "matched",
+    "txn_7095d59566de": "matched",
+    "txn_72397115df90": "matched",
+    "txn_7271ce9188a8": "matched",
+    "txn_737f850fa2ce": "matched",
+    "txn_73d1fa8e24c0": "rounding_variance",
+    "txn_7419847b1fff": "matched",
+    "txn_742ea841819e": "matched",
+    "txn_749d19afbbf0": "rounding_variance",
+    "txn_74ef01c199ff": "matched",
+    "txn_7543f5345584": "matched",
+    "txn_75c2f35ff2d8": "matched",
+    "txn_75feb819bf13": "matched",
+    "txn_76d9932c4119": "timing_difference",
+    "txn_76e23d949940": "matched",
+    "txn_771a147d5a38": "matched",
+    "txn_77fc377fa284": "matched",
+    "txn_77fd266766c2": "rounding_variance",
+    "txn_784695847401": "matched",
+    "txn_78d210b718f3": "matched",
+    "txn_78ff63d3344b": "matched",
+    "txn_797b5d3550e9": "matched",
+    "txn_79f62d16f6b4": "timing_difference",
+    "txn_7a3116b3d378": "matched",
+    "txn_7acba18fc315": "matched",
+    "txn_7b4d5ca8d8c9": "matched",
+    "txn_7be2f2a9091c": "matched",
+    "txn_7cad87a901c7": "matched",
+    "txn_7f4603557fa2": "matched",
+    "txn_7f4ce3ae19e3": "matched",
+    "txn_7fe891318e49": "matched",
+    "txn_807056c5e99a": "matched",
+    "txn_816964825221": "matched",
+    "txn_8183c527460e": "matched",
+    "txn_81a940169b02": "matched",
+    "txn_81dc7d193eed": "matched",
+    "txn_81ef536abc1c": "matched",
+    "txn_8266a2c84365": "matched",
+    "txn_8354f5ef8847": "matched",
+    "txn_840b9ec7ab93": "matched",
+    "txn_84b6963382fd": "matched",
+    "txn_8529a9541bd3": "matched",
+    "txn_85376d04c937": "matched",
+    "txn_8726d015322b": "matched",
+    "txn_8746dba78bc8": "matched",
+    "txn_886ec6c2653d": "matched",
+    "txn_887ff5999051": "matched",
+    "txn_88a49b26bb9b": "matched",
+    "txn_88cd5d8a86f8": "matched",
+    "txn_89069a7c8763": "matched",
+    "txn_897194802e47": "matched",
+    "txn_898933c9fe04": "matched",
+    "txn_898c646fe109": "matched",
+    "txn_8aa06bc32cea": "matched",
+    "txn_8bc145345ea2": "matched",
+    "txn_8bc65428e4f3": "matched",
+    "txn_8c4000a960c6": "matched",
+    "txn_8c855b095310": "matched",
+    "txn_8cadecd9ecd9": "matched",
+    "txn_8cf33bef8ba4": "matched",
+    "txn_8d5efbc8ac7d": "matched",
+    "txn_8e9fe20e1b33": "matched",
+    "txn_8eaffff2927a": "matched",
+    "txn_8f155c5646ce": "matched",
+    "txn_8f51227e4cde": "matched",
+    "txn_8f8666977c0c": "matched",
+    "txn_9016a806daab": "matched",
+    "txn_911a5260c36e": "matched",
+    "txn_928db21681b7": "matched",
+    "txn_93abb06c0cc5": "matched",
+    "txn_942a00055ce2": "matched",
+    "txn_946825fdf016": "matched",
+    "txn_95686962e3e2": "matched",
+    "txn_95d3be5417f4": "matched",
+    "txn_9628c7b4c678": "matched",
+    "txn_962f627c739d": "rounding_variance",
+    "txn_977513630cf9": "matched",
+    "txn_978b2511d009": "matched",
+    "txn_97cb1fb541ab": "matched",
+    "txn_983f6684e1bc": "matched",
+    "txn_98461063bb07": "matched",
+    "txn_9924e335eaf4": "matched",
+    "txn_9a57a8786189": "matched",
+    "txn_9bae5786ad91": "matched",
+    "txn_9d27b6e0c315": "duplicate",
+    "txn_9d66168e8d05": "matched",
+    "txn_9e0af6c434df": "matched",
+    "txn_9e13faee550e": "matched",
+    "txn_9fba14814031": "matched",
+    "txn_a0b84ba3f51a": "rounding_variance",
+    "txn_a0f7b690d325": "matched",
+    "txn_a249e43d4580": "matched",
+    "txn_a2e204320337": "matched",
+    "txn_a2f89f3a750c": "matched",
+    "txn_a3c66672739c": "matched",
+    "txn_a41b21fb4df3": "matched",
+    "txn_a499aaa74fc8": "matched",
+    "txn_a4c035296186": "matched",
+    "txn_a507e323c96c": "matched",
+    "txn_a5f2c7d5ecae": "rounding_variance",
+    "txn_a6352fae494b": "matched",
+    "txn_a677c7746f14": "matched",
+    "txn_a68d55ec7b0b": "matched",
+    "txn_a71fd17d6894": "matched",
+    "txn_a74e953627cf": "matched",
+    "txn_a75d3a9f5acf": "matched",
+    "txn_a7f881830d4d": "matched",
+    "txn_a85d204bdbe3": "matched",
+    "txn_a98bc9a12d35": "matched",
+    "txn_a999cb5686ef": "matched",
+    "txn_ab17e5ef3fcd": "timing_difference",
+    "txn_ab2bfbbea52a": "rounding_variance",
+    "txn_ab6696475602": "matched",
+    "txn_ac35d2a2c78f": "matched",
+    "txn_ac7773b2e824": "matched",
+    "txn_ac77e4fc0e36": "matched",
+    "txn_ac982ba947fa": "matched",
+    "txn_acdaab204459": "matched",
+    "txn_ace4ddeba3a9": "matched",
+    "txn_af01689834b6": "matched",
+    "txn_af3ae644e781": "matched",
+    "txn_af6872f3684e": "timing_difference",
+    "txn_afe7c1c0621d": "rounding_variance",
+    "txn_b0d4454330f2": "matched",
+    "txn_b0f0ab2bd53d": "matched",
+    "txn_b23fa35d74f4": "matched",
+    "txn_b2e49a94f8ff": "matched",
+    "txn_b37252a36b86": "matched",
+    "txn_b37299b7dcba": "matched",
+    "txn_b3845a033224": "matched",
+    "txn_b3d13796fa02": "matched",
+    "txn_b3f61d8a4c07": "unmatched_refund",
+    "txn_b421d596a02a": "matched",
+    "txn_b42512ff6196": "matched",
+    "txn_b46b151b009c": "matched",
+    "txn_b488ba3ca7cb": "matched",
+    "txn_b4e591631594": "matched",
+    "txn_b661a77739d5": "matched",
+    "txn_b705d55a27c4": "matched",
+    "txn_b87de2eefdba": "matched",
+    "txn_b8d5f18f8a7a": "matched",
+    "txn_b940cf936fbb": "matched",
+    "txn_b964df4d279e": "matched",
+    "txn_b9d69fe8e947": "matched",
+    "txn_b9e15825bf7d": "matched",
+    "txn_bacdf3d304a6": "matched",
+    "txn_bbc65dc14f79": "matched",
+    "txn_be07e7cda313": "matched",
+    "txn_be67c53ac4f6": "matched",
+    "txn_bee144b9ae30": "matched",
+    "txn_bf05bac8ebd9": "matched",
+    "txn_bfaaca85280c": "matched",
+    "txn_bfe43f9b27e8": "matched",
+    "txn_c080295edcb7": "matched",
+    "txn_c10179710dc9": "matched",
+    "txn_c1f94db840a5": "matched",
+    "txn_c21a6553f118": "matched",
+    "txn_c21f3bef03ba": "matched",
+    "txn_c251061b3625": "matched",
+    "txn_c3cfca8e146c": "matched",
+    "txn_c47d0bf1d348": "matched",
+    "txn_c49e9d6cd4a7": "matched",
+    "txn_c4a80ab09aa0": "matched",
+    "txn_c51e16df1de4": "matched",
+    "txn_c5392386464b": "matched",
+    "txn_c59f706838b8": "matched",
+    "txn_c5ee600e3f7e": "matched",
+    "txn_c6126056e96f": "matched",
+    "txn_c62858156cb9": "matched",
+    "txn_c64dbe383fcb": "matched",
+    "txn_c6763b08e538": "matched",
+    "txn_c7918a67899d": "matched",
+    "txn_c8a9b0209699": "matched",
+    "txn_c8c419531389": "timing_difference",
+    "txn_ca64350a59fb": "matched",
+    "txn_ca64bd6abdf4": "matched",
+    "txn_ca6ffe0e8f0e": "matched",
+    "txn_cab5ecda2e94": "matched",
+    "txn_cc0094cb98dc": "matched",
+    "txn_ccf0c043e944": "matched",
+    "txn_cd1a17226908": "matched",
+    "txn_cd271b8c09e5": "matched",
+    "txn_cd388cb245d7": "matched",
+    "txn_cdc221874eab": "matched",
+    "txn_cdee650c3634": "matched",
+    "txn_ce595e8b58e9": "matched",
+    "txn_ce9cf10b2597": "matched",
+    "txn_cf081a90660e": "matched",
+    "txn_cf2f26a71212": "matched",
+    "txn_cfbbe4786924": "matched",
+    "txn_cfe7525c7b6f": "matched",
+    "txn_d10dd81861d5": "matched",
+    "txn_d1891de44351": "matched",
+    "txn_d31c49b4b937": "matched",
+    "txn_d3957980d696": "matched",
+    "txn_d41a6112214f": "matched",
+    "txn_d59c15c9bd3b": "matched",
+    "txn_d5f05660a455": "matched",
+    "txn_d625fc22a4d4": "matched",
+    "txn_d6839b4b3508": "matched",
+    "txn_d81e0c328458": "matched",
+    "txn_d868ecaeec9e": "matched",
+    "txn_d9b51142c125": "matched",
+    "txn_d9ef0f499cc7": "matched",
+    "txn_d9fbd96ea88b": "matched",
+    "txn_da0ad507cf4b": "matched",
+    "txn_da476209097e": "matched",
+    "txn_dab178ad0029": "rounding_variance",
+    "txn_dadb9ecb1d70": "matched",
+    "txn_db63593a0879": "matched",
+    "txn_dba259571d85": "matched",
+    "txn_dc3f58d03e61": "matched",
+    "txn_dc942221396e": "matched",
+    "txn_dd365a58bfd0": "matched",
+    "txn_deb95cc9d068": "matched",
+    "txn_dee7b706c8e5": "matched",
+    "txn_deed3be75694": "matched",
+    "txn_df8ca785c7b9": "matched",
+    "txn_dfd79c37b23b": "matched",
+    "txn_dfef6d12aa15": "matched",
+    "txn_e0b91db6cfda": "matched",
+    "txn_e0f6d2c2373b": "matched",
+    "txn_e13761309a0e": "matched",
+    "txn_e13b42aadea3": "matched",
+    "txn_e1e78ed13abe": "matched",
+    "txn_e2170f2e398a": "timing_difference",
+    "txn_e2448532a661": "matched",
+    "txn_e323410de86f": "matched",
+    "txn_e41b07c9d2a6": "timing_difference",
+    "txn_e46d0e8a516e": "matched",
+    "txn_e518bb94df6e": "matched",
+    "txn_e5e28e935595": "matched",
+    "txn_e64704a32712": "matched",
+    "txn_e797f8fc66bd": "matched",
+    "txn_e8048998c10d": "rounding_variance",
+    "txn_e806ebdb14ef": "matched",
+    "txn_e8501fc9df68": "matched",
+    "txn_ea4aaf7b87cb": "matched",
+    "txn_ed69a16f210a": "matched",
+    "txn_edac7e847e49": "matched",
+    "txn_edcf3fa043de": "matched",
+    "txn_ee53f75b327a": "rounding_variance",
+    "txn_ee907f29bf4a": "matched",
+    "txn_eea5ab1c7b97": "matched",
+    "txn_ef4a4a12d510": "rounding_variance",
+    "txn_eff83b880040": "rounding_variance",
+    "txn_f0990a866b48": "matched",
+    "txn_f19d316aeedd": "matched",
+    "txn_f1fe2113dd3b": "matched",
+    "txn_f29c07c4fced": "matched",
+    "txn_f2c6f27ef327": "matched",
+    "txn_f3a773d45f79": "matched",
+    "txn_f47534f3a560": "matched",
+    "txn_f54a444be7d4": "matched",
+    "txn_f5d018f13455": "matched",
+    "txn_f608a5c82f42": "matched",
+    "txn_f6ce4513d126": "matched",
+    "txn_f6dcbef2bf70": "matched",
+    "txn_f862fa19a022": "matched",
+    "txn_f87cb407d41a": "matched",
+    "txn_f92d5b3488f2": "matched",
+    "txn_f9363eb69864": "matched",
+    "txn_fa122664b403": "matched",
+    "txn_fa64ad9aebd6": "matched",
+    "txn_fac5d9f326ce": "matched",
+    "txn_facea8d0ce76": "matched",
+    "txn_fad8ff579c69": "matched",
+    "txn_fbfdc1460ae3": "matched",
+    "txn_fc008ae9e2ce": "matched",
+    "txn_fc245716793e": "timing_difference",
+    "txn_fc5f68b254a0": "matched",
+    "txn_fd03dfee673b": "matched",
+    "txn_fd2ee12acc4f": "matched",
+    "txn_fd3a7e84aab7": "rounding_variance",
+    "txn_fd4e7ab0ec09": "matched",
+    "txn_fd613b1efbad": "matched",
+    "txn_fdb05a552435": "matched",
+    "txn_fdb4cd1bf503": "matched",
+    "txn_fdb5284e46ea": "matched",
+    "txn_fe4f709d4a3c": "rounding_variance",
+    "txn_fe724389df2c": "matched",
+    "txn_fec14e437f36": "matched",
+    "txn_ff4c8c7f2a26": "matched"
+  },
+  "expected_bank_bucket": {
+    "1": "non_transaction",
+    "2": "matched",
+    "3": "matched",
+    "4": "matched",
+    "5": "matched",
+    "6": "matched",
+    "7": "matched",
+    "8": "matched",
+    "9": "matched",
+    "10": "matched",
+    "11": "matched",
+    "12": "matched",
+    "13": "matched",
+    "14": "matched",
+    "15": "matched",
+    "16": "matched",
+    "17": "matched",
+    "18": "matched",
+    "19": "matched",
+    "20": "matched",
+    "21": "matched",
+    "22": "matched",
+    "23": "matched",
+    "24": "matched",
+    "25": "matched",
+    "26": "matched",
+    "27": "matched",
+    "28": "matched",
+    "29": "matched",
+    "30": "matched",
+    "31": "matched",
+    "32": "matched",
+    "33": "matched",
+    "34": "matched",
+    "35": "matched",
+    "36": "matched",
+    "37": "matched",
+    "38": "matched",
+    "39": "matched",
+    "40": "matched",
+    "41": "matched",
+    "42": "matched",
+    "43": "matched",
+    "44": "matched",
+    "45": "matched",
+    "46": "matched",
+    "47": "matched",
+    "48": "matched",
+    "49": "matched",
+    "50": "matched",
+    "51": "matched",
+    "52": "matched",
+    "53": "matched",
+    "54": "matched",
+    "55": "matched",
+    "56": "matched",
+    "57": "matched",
+    "58": "matched",
+    "59": "matched",
+    "60": "matched",
+    "61": "matched",
+    "62": "matched",
+    "63": "matched",
+    "64": "matched",
+    "65": "matched",
+    "66": "matched",
+    "67": "matched",
+    "68": "matched",
+    "69": "matched",
+    "70": "matched",
+    "71": "matched",
+    "72": "matched",
+    "73": "matched",
+    "74": "matched",
+    "75": "matched",
+    "76": "matched",
+    "77": "matched",
+    "78": "matched",
+    "79": "matched",
+    "80": "matched",
+    "81": "matched",
+    "82": "matched",
+    "83": "matched",
+    "84": "matched",
+    "85": "matched",
+    "86": "matched",
+    "87": "matched",
+    "88": "matched",
+    "89": "matched",
+    "90": "matched",
+    "91": "matched",
+    "92": "matched",
+    "93": "matched",
+    "94": "matched",
+    "95": "unmatched_refund",
+    "96": "matched",
+    "97": "matched",
+    "98": "matched",
+    "99": "matched",
+    "100": "matched",
+    "101": "matched",
+    "102": "matched",
+    "103": "matched",
+    "104": "matched",
+    "105": "matched",
+    "106": "matched",
+    "107": "matched",
+    "108": "matched",
+    "109": "matched",
+    "110": "matched",
+    "111": "matched",
+    "112": "matched",
+    "113": "matched",
+    "114": "matched",
+    "115": "matched",
+    "116": "matched",
+    "117": "matched",
+    "118": "matched",
+    "119": "matched",
+    "120": "matched",
+    "121": "matched",
+    "122": "matched",
+    "123": "matched",
+    "124": "matched",
+    "125": "matched",
+    "126": "matched",
+    "127": "matched",
+    "128": "matched",
+    "129": "matched",
+    "130": "matched",
+    "131": "matched",
+    "132": "matched",
+    "133": "matched",
+    "134": "matched",
+    "135": "matched",
+    "136": "matched",
+    "137": "matched",
+    "138": "matched",
+    "139": "matched",
+    "140": "rounding_variance",
+    "141": "matched",
+    "142": "matched",
+    "143": "matched",
+    "144": "matched",
+    "145": "matched",
+    "146": "matched",
+    "147": "matched",
+    "148": "matched",
+    "149": "matched",
+    "150": "matched",
+    "151": "matched",
+    "152": "matched",
+    "153": "matched",
+    "154": "matched",
+    "155": "matched",
+    "156": "matched",
+    "157": "matched",
+    "158": "matched",
+    "159": "matched",
+    "160": "matched",
+    "161": "matched",
+    "162": "matched",
+    "163": "matched",
+    "164": "matched",
+    "165": "matched",
+    "166": "matched",
+    "167": "matched",
+    "168": "matched",
+    "169": "matched",
+    "170": "matched",
+    "171": "matched",
+    "172": "matched",
+    "173": "matched",
+    "174": "matched",
+    "175": "matched",
+    "176": "matched",
+    "177": "matched",
+    "178": "matched",
+    "179": "matched",
+    "180": "matched",
+    "181": "matched",
+    "182": "matched",
+    "183": "matched",
+    "184": "matched",
+    "185": "matched",
+    "186": "matched",
+    "187": "matched",
+    "188": "rounding_variance",
+    "189": "matched",
+    "190": "matched",
+    "191": "matched",
+    "192": "matched",
+    "193": "matched",
+    "194": "matched",
+    "195": "matched",
+    "196": "matched",
+    "197": "matched",
+    "198": "matched",
+    "199": "matched",
+    "200": "matched",
+    "201": "matched",
+    "202": "matched",
+    "203": "matched",
+    "204": "matched",
+    "205": "matched",
+    "206": "matched",
+    "207": "matched",
+    "208": "matched",
+    "209": "matched",
+    "210": "matched",
+    "211": "matched",
+    "212": "matched",
+    "213": "matched",
+    "214": "matched",
+    "215": "matched",
+    "216": "matched",
+    "217": "matched",
+    "218": "matched",
+    "219": "matched",
+    "220": "matched",
+    "221": "matched",
+    "222": "matched",
+    "223": "matched",
+    "224": "matched",
+    "225": "rounding_variance",
+    "226": "matched",
+    "227": "matched",
+    "228": "matched",
+    "229": "matched",
+    "230": "matched",
+    "231": "matched",
+    "232": "matched",
+    "233": "matched",
+    "234": "matched",
+    "235": "matched",
+    "236": "matched",
+    "237": "matched",
+    "238": "matched",
+    "239": "matched",
+    "240": "matched",
+    "241": "matched",
+    "242": "matched",
+    "243": "matched",
+    "244": "matched",
+    "245": "matched",
+    "246": "matched",
+    "247": "matched",
+    "248": "matched",
+    "249": "matched",
+    "250": "matched",
+    "251": "matched",
+    "252": "matched",
+    "253": "matched",
+    "254": "matched",
+    "255": "matched",
+    "256": "matched",
+    "257": "matched",
+    "258": "matched",
+    "259": "matched",
+    "260": "matched",
+    "261": "matched",
+    "262": "matched",
+    "263": "matched",
+    "264": "matched",
+    "265": "matched",
+    "266": "matched",
+    "267": "matched",
+    "268": "matched",
+    "269": "matched",
+    "270": "matched",
+    "271": "matched",
+    "272": "matched",
+    "273": "matched",
+    "274": "matched",
+    "275": "matched",
+    "276": "matched",
+    "277": "matched",
+    "278": "matched",
+    "279": "matched",
+    "280": "matched",
+    "281": "matched",
+    "282": "matched",
+    "283": "matched",
+    "284": "matched",
+    "285": "matched",
+    "286": "matched",
+    "287": "matched",
+    "288": "matched",
+    "289": "matched",
+    "290": "matched",
+    "291": "matched",
+    "292": "matched",
+    "293": "matched",
+    "294": "matched",
+    "295": "matched",
+    "296": "matched",
+    "297": "matched",
+    "298": "matched",
+    "299": "matched",
+    "300": "matched",
+    "301": "matched",
+    "302": "matched",
+    "303": "matched",
+    "304": "matched",
+    "305": "matched",
+    "306": "matched",
+    "307": "matched",
+    "308": "matched",
+    "309": "matched",
+    "310": "matched",
+    "311": "matched",
+    "312": "matched",
+    "313": "matched",
+    "314": "matched",
+    "315": "matched",
+    "316": "matched",
+    "317": "matched",
+    "318": "matched",
+    "319": "matched",
+    "320": "rounding_variance",
+    "321": "matched",
+    "322": "matched",
+    "323": "matched",
+    "324": "matched",
+    "325": "matched",
+    "326": "matched",
+    "327": "matched",
+    "328": "matched",
+    "329": "matched",
+    "330": "matched",
+    "331": "matched",
+    "332": "matched",
+    "333": "matched",
+    "334": "matched",
+    "335": "matched",
+    "336": "matched",
+    "337": "matched",
+    "338": "matched",
+    "339": "matched",
+    "340": "matched",
+    "341": "matched",
+    "342": "matched",
+    "343": "matched",
+    "344": "matched",
+    "345": "matched",
+    "346": "matched",
+    "347": "matched",
+    "348": "matched",
+    "349": "matched",
+    "350": "matched",
+    "351": "matched",
+    "352": "matched",
+    "353": "matched",
+    "354": "matched",
+    "355": "matched",
+    "356": "matched",
+    "357": "matched",
+    "358": "matched",
+    "359": "matched",
+    "360": "matched",
+    "361": "matched",
+    "362": "matched",
+    "363": "matched",
+    "364": "matched",
+    "365": "matched",
+    "366": "matched",
+    "367": "matched",
+    "368": "matched",
+    "369": "matched",
+    "370": "matched",
+    "371": "matched",
+    "372": "matched",
+    "373": "matched",
+    "374": "matched",
+    "375": "matched",
+    "376": "matched",
+    "377": "matched",
+    "378": "matched",
+    "379": "bank_only"
+  }
+}
