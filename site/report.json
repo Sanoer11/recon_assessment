@@ -1,0 +1,509 @@
+{
+  "meta": {
+    "period_end": "2026-10-31",
+    "ledger_file": "sample_data/ledger.csv",
+    "bank_file": "sample_data/bank_statement.csv",
+    "ledger_rows": 504,
+    "bank_rows": 378
+  },
+  "totals": {
+    "ledger_total": "785699.89",
+    "bank_total": "763514.04",
+    "variance": "-22185.85"
+  },
+  "bridge": {
+    "bank_only": "-590.00",
+    "duplicate": "-1463.62",
+    "matched": "0.00",
+    "rounding_variance": "0.09",
+    "timing_difference": "-20132.32",
+    "unmatched_refund": "0.00",
+    "RESIDUAL": "0.00"
+  },
+  "stage_counts": {
+    "S1": 233,
+    "S2": 144,
+    "S3": 0
+  },
+  "ledger_bucket_counts": {
+    "duplicate": 1,
+    "matched": 459,
+    "rounding_variance": 27,
+    "timing_difference": 16,
+    "unmatched_refund": 1
+  },
+  "bank_bucket_counts": {
+    "bank_only": 1,
+    "matched": 372,
+    "rounding_variance": 4,
+    "unmatched_refund": 1
+  },
+  "exceptions": [
+    {
+      "id": "B-M001-20261030",
+      "bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_450faf24e3d5"
+      ],
+      "bank_row": null,
+      "ledger_amt": "1040.08",
+      "bank_amt": null,
+      "diff": null,
+      "explanation": "captured 2026-10-30; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end",
+      "owner": "Finance",
+      "severity": "low",
+      "journal_entry": "No entry this period \u2014 Dr Settlement Receivable 1040.08 in Nov when it lands",
+      "details": {
+        "expected_settle_date": "2026-11-02",
+        "why": "captured 2026-10-30; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end"
+      }
+    },
+    {
+      "id": "B-M002-20261031",
+      "bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_379761a49e0c",
+        "txn_31de0a878bc2",
+        "txn_c8c419531389"
+      ],
+      "bank_row": null,
+      "ledger_amt": "5448.98",
+      "bank_amt": null,
+      "diff": null,
+      "explanation": "captured 2026-10-31; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end",
+      "owner": "Finance",
+      "severity": "low",
+      "journal_entry": "No entry this period \u2014 Dr Settlement Receivable 5448.98 in Nov when it lands",
+      "details": {
+        "expected_settle_date": "2026-11-02",
+        "why": "captured 2026-10-31; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end"
+      }
+    },
+    {
+      "id": "B-M005-20261031",
+      "bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_76d9932c4119"
+      ],
+      "bank_row": null,
+      "ledger_amt": "2187.57",
+      "bank_amt": null,
+      "diff": null,
+      "explanation": "captured 2026-10-31; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end",
+      "owner": "Finance",
+      "severity": "low",
+      "journal_entry": "No entry this period \u2014 Dr Settlement Receivable 2187.57 in Nov when it lands",
+      "details": {
+        "expected_settle_date": "2026-11-02",
+        "why": "captured 2026-10-31; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end"
+      }
+    },
+    {
+      "id": "B-M011-20261010",
+      "bucket": "rounding_variance",
+      "ledger_txn_ids": [
+        "txn_349fc4b81d74",
+        "txn_eff83b880040"
+      ],
+      "bank_row": 140,
+      "ledger_amt": "3749.69",
+      "bank_amt": "3749.70",
+      "diff": "0.01",
+      "explanation": "each line's fee was rounded half-up individually; the bank/acquirer rounds once on the batch gross of 3840.33, giving a batch fee of 90.63 instead of the summed line fees of 90.64",
+      "owner": "Finance",
+      "severity": "low",
+      "journal_entry": "Dr/Cr Bank Charges 0.01 (acquirer batch-fee rounding) / Cr/Dr Settlement Receivable",
+      "details": {
+        "gross": "3840.33",
+        "sum_line_fees": "90.64",
+        "batch_fee_recomputed": "90.63",
+        "ledger_expected_net": "3749.69",
+        "bank_amount": "3749.70",
+        "diff": "0.01",
+        "why": "each line's fee was rounded half-up individually; the bank/acquirer rounds once on the batch gross of 3840.33, giving a batch fee of 90.63 instead of the summed line fees of 90.64"
+      }
+    },
+    {
+      "id": "B-M011-20261015",
+      "bucket": "rounding_variance",
+      "ledger_txn_ids": [
+        "txn_5ed2bec32dce",
+        "txn_35feae698e58",
+        "txn_42793710fae2",
+        "txn_36bc05aa9584",
+        "txn_749d19afbbf0",
+        "txn_a5f2c7d5ecae",
+        "txn_4e108673e847",
+        "txn_dab178ad0029",
+        "txn_73d1fa8e24c0",
+        "txn_148ad24123fb",
+        "txn_ab2bfbbea52a",
+        "txn_4f7e403dcafc",
+        "txn_77fd266766c2",
+        "txn_4391fea28e48",
+        "txn_5687c80f0eb0",
+        "txn_afe7c1c0621d",
+        "txn_e8048998c10d",
+        "txn_962f627c739d",
+        "txn_4469df82dd06",
+        "txn_a0b84ba3f51a"
+      ],
+      "bank_row": 188,
+      "ledger_amt": "37168.34",
+      "bank_amt": "37168.40",
+      "diff": "0.06",
+      "explanation": "each line's fee was rounded half-up individually; the bank/acquirer rounds once on the batch gross of 38066.78, giving a batch fee of 898.38 instead of the summed line fees of 898.44",
+      "owner": "Finance",
+      "severity": "low",
+      "journal_entry": "Dr/Cr Bank Charges 0.06 (acquirer batch-fee rounding) / Cr/Dr Settlement Receivable",
+      "details": {
+        "gross": "38066.78",
+        "sum_line_fees": "898.44",
+        "batch_fee_recomputed": "898.38",
+        "ledger_expected_net": "37168.34",
+        "bank_amount": "37168.40",
+        "diff": "0.06",
+        "why": "each line's fee was rounded half-up individually; the bank/acquirer rounds once on the batch gross of 38066.78, giving a batch fee of 898.38 instead of the summed line fees of 898.44"
+      }
+    },
+    {
+      "id": "B-M011-20261017",
+      "bucket": "rounding_variance",
+      "ledger_txn_ids": [
+        "txn_fd3a7e84aab7",
+        "txn_ef4a4a12d510"
+      ],
+      "bank_row": 225,
+      "ledger_amt": "1169.72",
+      "bank_amt": "1169.73",
+      "diff": "0.01",
+      "explanation": "each line's fee was rounded half-up individually; the bank/acquirer rounds once on the batch gross of 1198.00, giving a batch fee of 28.27 instead of the summed line fees of 28.28",
+      "owner": "Finance",
+      "severity": "low",
+      "journal_entry": "Dr/Cr Bank Charges 0.01 (acquirer batch-fee rounding) / Cr/Dr Settlement Receivable",
+      "details": {
+        "gross": "1198.00",
+        "sum_line_fees": "28.28",
+        "batch_fee_recomputed": "28.27",
+        "ledger_expected_net": "1169.72",
+        "bank_amount": "1169.73",
+        "diff": "0.01",
+        "why": "each line's fee was rounded half-up individually; the bank/acquirer rounds once on the batch gross of 1198.00, giving a batch fee of 28.27 instead of the summed line fees of 28.28"
+      }
+    },
+    {
+      "id": "B-M011-20261023",
+      "bucket": "rounding_variance",
+      "ledger_txn_ids": [
+        "txn_fe4f709d4a3c",
+        "txn_ee53f75b327a",
+        "txn_0427784131b0"
+      ],
+      "bank_row": 320,
+      "ledger_amt": "1155.27",
+      "bank_amt": "1155.28",
+      "diff": "0.01",
+      "explanation": "each line's fee was rounded half-up individually; the bank/acquirer rounds once on the batch gross of 1183.20, giving a batch fee of 27.92 instead of the summed line fees of 27.93",
+      "owner": "Finance",
+      "severity": "low",
+      "journal_entry": "Dr/Cr Bank Charges 0.01 (acquirer batch-fee rounding) / Cr/Dr Settlement Receivable",
+      "details": {
+        "gross": "1183.20",
+        "sum_line_fees": "27.93",
+        "batch_fee_recomputed": "27.92",
+        "ledger_expected_net": "1155.27",
+        "bank_amount": "1155.28",
+        "diff": "0.01",
+        "why": "each line's fee was rounded half-up individually; the bank/acquirer rounds once on the batch gross of 1183.20, giving a batch fee of 27.92 instead of the summed line fees of 27.93"
+      }
+    },
+    {
+      "id": "B-M011-20261031",
+      "bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_af6872f3684e"
+      ],
+      "bank_row": null,
+      "ledger_amt": "1756.54",
+      "bank_amt": null,
+      "diff": null,
+      "explanation": "captured 2026-10-31; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end",
+      "owner": "Finance",
+      "severity": "low",
+      "journal_entry": "No entry this period \u2014 Dr Settlement Receivable 1756.54 in Nov when it lands",
+      "details": {
+        "expected_settle_date": "2026-11-02",
+        "why": "captured 2026-10-31; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end"
+      }
+    },
+    {
+      "id": "bank_row_379",
+      "bucket": "bank_only",
+      "ledger_txn_ids": [],
+      "bank_row": 379,
+      "ledger_amt": "0.00",
+      "bank_amt": "-590.00",
+      "diff": "-590.00",
+      "explanation": "Bank line with no ledger counterpart (e.g. a bank-levied charge).",
+      "owner": "Bank Ops",
+      "severity": "low",
+      "journal_entry": "Dr Bank Charges  / Cr Bank",
+      "details": {}
+    },
+    {
+      "id": "bank_row_95",
+      "bucket": "unmatched_refund",
+      "ledger_txn_ids": [
+        "txn_b3f61d8a4c07"
+      ],
+      "bank_row": 95,
+      "ledger_amt": "-1186.40",
+      "bank_amt": "-1186.40",
+      "diff": "0.00",
+      "explanation": "this refund and its bank debit agree with each other, but no sale of 1186.40 at M013 exists anywhere in the ledger \u2014 the variance effect is zero, but it is still a control exception",
+      "owner": "Risk",
+      "severity": "high",
+      "journal_entry": "Dr Refund Expense (unsupported) 1186.40 / Cr Bank \u2014 escalate to Risk",
+      "details": {
+        "why": "this refund and its bank debit agree with each other, but no sale of 1186.40 at M013 exists anywhere in the ledger \u2014 the variance effect is zero, but it is still a control exception"
+      }
+    },
+    {
+      "id": "txn_00757a8b3fd5",
+      "bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_00757a8b3fd5"
+      ],
+      "bank_row": null,
+      "ledger_amt": "2537.33",
+      "bank_amt": null,
+      "diff": null,
+      "explanation": "captured 2026-10-31; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end",
+      "owner": "Finance",
+      "severity": "low",
+      "journal_entry": "No entry this period \u2014 Dr Settlement Receivable 2537.33 in Nov when it lands",
+      "details": {
+        "expected_settle_date": "2026-11-02",
+        "why": "captured 2026-10-31; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end"
+      }
+    },
+    {
+      "id": "txn_240774ad4a02",
+      "bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_240774ad4a02"
+      ],
+      "bank_row": null,
+      "ledger_amt": "361.90",
+      "bank_amt": null,
+      "diff": null,
+      "explanation": "captured 2026-10-31; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end",
+      "owner": "Finance",
+      "severity": "low",
+      "journal_entry": "No entry this period \u2014 Dr Settlement Receivable 361.90 in Nov when it lands",
+      "details": {
+        "expected_settle_date": "2026-11-02",
+        "why": "captured 2026-10-31; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end"
+      }
+    },
+    {
+      "id": "txn_2742e37f4f74",
+      "bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_2742e37f4f74"
+      ],
+      "bank_row": null,
+      "ledger_amt": "850.16",
+      "bank_amt": null,
+      "diff": null,
+      "explanation": "captured 2026-10-31; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end",
+      "owner": "Finance",
+      "severity": "low",
+      "journal_entry": "No entry this period \u2014 Dr Settlement Receivable 850.16 in Nov when it lands",
+      "details": {
+        "expected_settle_date": "2026-11-02",
+        "why": "captured 2026-10-31; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end"
+      }
+    },
+    {
+      "id": "txn_4e42ba9e2f3e",
+      "bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_4e42ba9e2f3e"
+      ],
+      "bank_row": null,
+      "ledger_amt": "194.30",
+      "bank_amt": null,
+      "diff": null,
+      "explanation": "captured 2026-10-31; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end",
+      "owner": "Finance",
+      "severity": "low",
+      "journal_entry": "No entry this period \u2014 Dr Settlement Receivable 194.30 in Nov when it lands",
+      "details": {
+        "expected_settle_date": "2026-11-02",
+        "why": "captured 2026-10-31; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end"
+      }
+    },
+    {
+      "id": "txn_695f0748e6db",
+      "bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_695f0748e6db"
+      ],
+      "bank_row": null,
+      "ledger_amt": "194.30",
+      "bank_amt": null,
+      "diff": null,
+      "explanation": "captured 2026-10-31; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end",
+      "owner": "Finance",
+      "severity": "low",
+      "journal_entry": "No entry this period \u2014 Dr Settlement Receivable 194.30 in Nov when it lands",
+      "details": {
+        "expected_settle_date": "2026-11-02",
+        "why": "captured 2026-10-31; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end"
+      }
+    },
+    {
+      "id": "txn_79f62d16f6b4",
+      "bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_79f62d16f6b4"
+      ],
+      "bank_row": null,
+      "ledger_amt": "792.03",
+      "bank_amt": null,
+      "diff": null,
+      "explanation": "captured 2026-10-31; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end",
+      "owner": "Finance",
+      "severity": "low",
+      "journal_entry": "No entry this period \u2014 Dr Settlement Receivable 792.03 in Nov when it lands",
+      "details": {
+        "expected_settle_date": "2026-11-02",
+        "why": "captured 2026-10-31; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end"
+      }
+    },
+    {
+      "id": "txn_9d27b6e0c315",
+      "bucket": "duplicate",
+      "ledger_txn_ids": [
+        "txn_9d27b6e0c315"
+      ],
+      "bank_row": null,
+      "ledger_amt": "1463.62",
+      "bank_amt": null,
+      "diff": null,
+      "explanation": "same merchant (M006) and amount (1499.00) as txn_5c80f3a1e9b4, created within 600 seconds of it, and no settlement exists for this row",
+      "owner": "Engineering",
+      "severity": "medium",
+      "journal_entry": "Dr Suspense / Cr Sales 1463.62 (reverse the duplicate platform record)",
+      "details": {
+        "duplicate_of": "txn_5c80f3a1e9b4",
+        "why": "same merchant (M006) and amount (1499.00) as txn_5c80f3a1e9b4, created within 600 seconds of it, and no settlement exists for this row"
+      }
+    },
+    {
+      "id": "txn_ab17e5ef3fcd",
+      "bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_ab17e5ef3fcd"
+      ],
+      "bank_row": null,
+      "ledger_amt": "584.86",
+      "bank_amt": null,
+      "diff": null,
+      "explanation": "captured 2026-10-30; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end",
+      "owner": "Finance",
+      "severity": "low",
+      "journal_entry": "No entry this period \u2014 Dr Settlement Receivable 584.86 in Nov when it lands",
+      "details": {
+        "expected_settle_date": "2026-11-02",
+        "why": "captured 2026-10-30; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end"
+      }
+    },
+    {
+      "id": "txn_b3f61d8a4c07",
+      "bucket": "unmatched_refund",
+      "ledger_txn_ids": [
+        "txn_b3f61d8a4c07"
+      ],
+      "bank_row": 95,
+      "ledger_amt": "-1186.40",
+      "bank_amt": "-1186.40",
+      "diff": "0.00",
+      "explanation": "this refund and its bank debit agree with each other, but no sale of 1186.40 at M013 exists anywhere in the ledger \u2014 the variance effect is zero, but it is still a control exception",
+      "owner": "Risk",
+      "severity": "high",
+      "journal_entry": "Dr Refund Expense (unsupported) 1186.40 / Cr Bank \u2014 escalate to Risk",
+      "details": {
+        "why": "this refund and its bank debit agree with each other, but no sale of 1186.40 at M013 exists anywhere in the ledger \u2014 the variance effect is zero, but it is still a control exception"
+      }
+    },
+    {
+      "id": "txn_e2170f2e398a",
+      "bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_e2170f2e398a"
+      ],
+      "bank_row": null,
+      "ledger_amt": "877.78",
+      "bank_amt": null,
+      "diff": null,
+      "explanation": "captured 2026-10-31; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end",
+      "owner": "Finance",
+      "severity": "low",
+      "journal_entry": "No entry this period \u2014 Dr Settlement Receivable 877.78 in Nov when it lands",
+      "details": {
+        "expected_settle_date": "2026-11-02",
+        "why": "captured 2026-10-31; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end"
+      }
+    },
+    {
+      "id": "txn_e41b07c9d2a6",
+      "bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_e41b07c9d2a6"
+      ],
+      "bank_row": null,
+      "ledger_amt": "2294.54",
+      "bank_amt": null,
+      "diff": null,
+      "explanation": "captured 2026-10-31; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end",
+      "owner": "Finance",
+      "severity": "low",
+      "journal_entry": "No entry this period \u2014 Dr Settlement Receivable 2294.54 in Nov when it lands",
+      "details": {
+        "expected_settle_date": "2026-11-02",
+        "why": "captured 2026-10-31; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end"
+      }
+    },
+    {
+      "id": "txn_fc245716793e",
+      "bucket": "timing_difference",
+      "ledger_txn_ids": [
+        "txn_fc245716793e"
+      ],
+      "bank_row": null,
+      "ledger_amt": "1011.95",
+      "bank_amt": null,
+      "diff": null,
+      "explanation": "captured 2026-10-31; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end",
+      "owner": "Finance",
+      "severity": "low",
+      "journal_entry": "No entry this period \u2014 Dr Settlement Receivable 1011.95 in Nov when it lands",
+      "details": {
+        "expected_settle_date": "2026-11-02",
+        "why": "captured 2026-10-31; even the shortest settlement lag (1 business day) lands on 2026-11-02, after the 2026-10-31 period end"
+      }
+    }
+  ],
+  "assumptions": [
+    "Single currency (INR); all money is Decimal, rounded half-up to 2 dp, matching both the platform and the bank.",
+    "Platform fee: 2.36% (2% MDR + 18% GST on the MDR, collapsed into one rate), rounded half-up once per line. Refunds carry no fee.",
+    "Business-day calendar: RBI holidays (Mahatma Gandhi Jayanti, Dussehra, Diwali / Bali Pratipada), Sundays, and the 2nd/4th Saturdays are non-working; the 1st/3rd/5th Saturdays are working days.",
+    "Settlement lag is 1-2 business days. When a ledger row has no bank line, the earliest lag consistent with that absence is used to compute its expected settle date for the timing_difference bucket.",
+    "Batch merchants settle one netted bank line per capture date. An unexplained batch diff is recomputed as the fee applied once to the batch gross; if that explains the diff exactly, the whole batch -- never a single line -- is flagged rounding_variance.",
+    "A ledger row that duplicates another (same merchant, same amount, within 10 minutes) where only one side ever settles is flagged duplicate; the settled side keeps its normal match.",
+    "A refund is matched like any other transaction via its own bank reference. If no originating sale exists anywhere in the ledger, it is flagged unmatched_refund even though it settled cleanly -- a zero-variance control exception, not a cash discrepancy.",
+    "Matching never reads ground_truth.json or any file outside the two input CSVs."
+  ]
+}
